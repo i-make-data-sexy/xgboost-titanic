@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {# Title #}
+    <title>Titanic Survival Analysis Dashboard</title>
+
+    {# Favicon for all pages #}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+    
+    {# Custom CSS #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    {# Updated Plotly JS - Using latest CDN #}
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    
+    {# Grid layout styles for the charts #}
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Titanic Survival Analysis</h1>
+        </div>
+        
+        {# Grid layout for 4 separate px charts #}
+        <div class="charts-grid">
+        <div class="chart-container" id="class-chart"></div>
+        <div class="chart-container" id="gender-chart"></div>
+        <div class="chart-container" id="family-chart"></div>
+        <div class="chart-container" id="age-chart"></div>
+        
+
+        <!-- raw JSON payloads -->
+        <script id="class-chart-data"  type="application/json">{{ class_chart  | safe }}</script>
+        <script id="gender-chart-data" type="application/json">{{ gender_chart | safe }}</script>
+        <script id="family-chart-data" type="application/json">{{ family_chart | safe }}</script>
+        <script id="age-chart-data"    type="application/json">{{ age_chart    | safe }}</script>
+        </div>
+
+        
+        <div class="footer">
+            <a href="#">Blog Post</a> | 
+            <a href="#">GitHub Repo</a>
+        </div>
+    </div>
+    
+    <!-- 2Plotly rendering logic lives in static/js/dashboard.js -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

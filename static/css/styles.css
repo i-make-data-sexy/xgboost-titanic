@@ -1,0 +1,115 @@
+/* ======================================================================
+   Containers
+   ======================================================================= */
+
+.dashboard-container {
+    background: #f8f8f847;
+    border: 1px solid #f3f3f3;
+    border-radius: 20px;
+    box-shadow: 1px 1px 6px 0px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    width: 100%;
+    max-width: 1400px;
+}
+
+.chart-container {
+    background: white;
+    border: solid 1px #DEDEDE;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-height: 350px;
+    overflow: hidden;                                   /* Prevent overflow */
+    position: relative;
+}
+
+/* Ensure charts are responsive */
+.chart-container > div {
+    width: 100% !important;                             /* Contain the Plotly chart within bounds */
+    height: 100% !important;
+    max-width: 100%;
+    position: relative;
+}
+
+
+/* ======================================================================
+   General Styles
+   ======================================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.header {
+    /* text-align: center; */
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: #666;
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.footer a {
+    color: #FFA500;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: #0273BE;
+}
+
+
+/* ======================================================================
+   Charts
+   ======================================================================= */
+
+#plotly-div {
+    width: 100%;
+    height: 800px;
+    background: white;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+    margin: 20px 0;
+}
+
+/* Target Plotly's main SVG container to prevent overflow */
+.chart-container .main-svg {
+    overflow: visible !important;
+}
+
+/* Ensure the plotly div itself doesn't overflow */
+.chart-container .js-plotly-plot {
+    max-width: 100%;
+    overflow: hidden;
+}
