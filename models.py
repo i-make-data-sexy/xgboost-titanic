@@ -350,46 +350,73 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
             row_details.append(text)
         hover_details.append(row_details)
     
-    # Use Plotly Express with custom hover data
-    fig = px.imshow(
-        cm,
-        labels=dict(x="Predicted", y="Actual", color="Count"),
+    # Create a color matrix - 1 for correct (diagonal), 0 for incorrect (off-diagonal)
+    color_matrix = np.zeros_like(cm, dtype=float)
+    np.fill_diagonal(color_matrix, 1)
+    
+    # Create custom colorscale - pink (0) to green (1)
+    colorscale = [
+        [0, config.BRAND_COLORS["pink"]],  # Incorrect predictions
+        [1, config.BRAND_COLORS["green"]]  # Correct predictions
+    ]
+    
+    # Use go.Heatmap instead of px.imshow for more control
+    fig = go.Figure(data=go.Heatmap(
+        z=color_matrix,  # Use color matrix for colors
+        text=cm,  # Use actual values for text
+        texttemplate="%{text}",  # Show the values
+        textfont={"size": 20},
         x=labels,
         y=labels,
-        text_auto=True,
-        color_continuous_scale=["white", config.BRAND_COLORS["blue"]],
-        title="Confusion Matrix"
-    )
-    
-    # Update hover template
-    fig.update_traces(
+        colorscale=colorscale,
+        showscale=False,
         customdata=hover_details,
         hovertemplate="%{customdata}<extra></extra>"
-    )
+    ))
     
+    # NEW: Calculate accuracy metrics
+    total = cm.sum()
+    correct = cm[0,0] + cm[1,1]  # Diagonal sum (TN + TP)
+    incorrect = cm[0,1] + cm[1,0]  # Off-diagonal sum (FP + FN)
+    accuracy = (correct / total) * 100
+    error_rate = (incorrect / total) * 100
+    
+    # Update layout
     fig.update_layout(
+        title="Confusion Matrix",
+        xaxis=dict(
+            title="Predicted",
+            side="bottom",
+            tickmode="array",
+            tickvals=[0, 1],
+            ticktext=labels
+        ),
+        yaxis=dict(
+            title="Actual",
+            tickmode="array",
+            tickvals=[0, 1],
+            ticktext=labels,
+            autorange="reversed"            # Flip y-axis to match standard confusion matrix
+        ),
+        width=700,
         height=600,
         plot_bgcolor="white",
         paper_bgcolor="white",
-        # NEW: Add margin for annotation
-        margin=dict(l=60, r=40, t=60, b=100)
+        margin=dict(l=60, r=40, t=60, b=180)
     )
     
-    # Hide color scale since values are shown on cells
-    fig.update_coloraxes(showscale=False)
-    
-    # NEW: Add interpretation annotation in bottom-left corner
+    # Add interpretation annotation in bottom-left corner
     fig.add_annotation(
         text=(
             "<b>How to Read:</b><br>"
-            "• Diagonal (↘) = Correct predictions<br>"
-            "• Off-diagonal = Errors<br>"
-            "• Higher numbers on diagonal = Better model"
+            f"• Green cells = Correct predictions ({correct}/{total} = {accuracy:.1f}%)<br>"
+            f"• Pink cells = Incorrect predictions ({incorrect}/{total} = {error_rate:.1f}%)<br>"
+            f"• Model Accuracy: {accuracy:.1f}%"
         ),
         xref="paper",
         yref="paper",
-        x=0,  # Left side
-        y=-0.15,  # Below the plot
+        x=0,
+        y=-0.2,
         xanchor="left",
         yanchor="top",
         showarrow=False,
@@ -398,6 +425,7 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
     )
     
     return fig
+
 
 def plot_roc_curve(y_true, y_scores):
     """
