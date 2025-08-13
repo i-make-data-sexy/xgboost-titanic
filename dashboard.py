@@ -80,7 +80,18 @@ def create_class_survival_chart(df):
     )
     
     fig.update_yaxes(type="category", autorange="reversed")
-    fig.update_xaxes(visible=False)
+    # fig.update_xaxes(visible=False)
+    
+    fig.update_xaxes(
+        # visible=False,
+        zeroline=True,              # Show the zero line
+        zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
+        zerolinecolor="#DEDEDE",  # Light gray color
+        showline=False,
+        showgrid=False,
+        title="",
+        showticklabels=False
+    )
     
     # Extend x-axis for data labels
     max_count = class_counts["Count"].max()
@@ -142,6 +153,64 @@ def create_gender_survival_donut(df):
         margin=dict(t=60, b=40, l=40, r=40),
         height=350,
         showlegend=False
+    )
+    
+    return fig
+
+def create_family_survival_line(df):
+    """
+    Creates a line chart showing survival rate by family size.
+    
+    Args:
+        df (pd.DataFrame): Titanic dataset with FamilySize column
+        
+    Returns:
+        plotly.express.Figure: Line chart
+    """
+    
+    # Calculate survival rate by family size
+    family_survival = (
+        df.groupby("FamilySize")["Survived"]
+        .mean()
+        .reset_index()
+    )
+    family_survival["Survived"] = family_survival["Survived"] * 100
+    
+    # Create line chart using scatter with lines mode
+    fig = px.scatter(
+        family_survival,
+        x="FamilySize",
+        y="Survived",
+        title="Survival Rate by Family Size",
+        color_discrete_sequence=[config.BRAND_COLORS["blue"]]
+    )
+    
+    # Convert to line chart with markers
+    fig.update_traces(
+        mode="lines+markers",
+        marker=dict(size=10, color=config.BRAND_COLORS["orange"]),
+        line=dict(width=3, color=config.BRAND_COLORS["blue"]),
+        hovertemplate="Family Size: %{x}<br>Survival Rate: %{y:.0f}%<extra></extra>"
+    )
+    
+    fig.update_layout(
+        yaxis=dict(
+            title="",
+            gridcolor="rgba(200,200,200,0.3)",
+            ticksuffix="%",
+            zeroline=False,         # Let the grid line at 0% be the only line
+            showgrid=True,
+        ),
+        xaxis=dict(
+            title="",
+            gridcolor="rgba(200,200,200,0.3)",
+            range=[0, family_survival["FamilySize"].max() + 1]
+        ),
+        margin_pad=5,
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        margin=dict(t=60, b=40, l=60, r=40),
+        height=350
     )
     
     return fig
@@ -216,7 +285,14 @@ def create_age_survival_chart(df):
     fig.update_layout(
         showlegend=True,
         legend_title_text="",
-        yaxis=dict(title="", showticklabels=False),
+        yaxis=dict(
+            title="", 
+            zeroline=True,              # Show the zero line
+            zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
+            zerolinecolor="#DEDEDE",  # Light gray color
+            showline=False,
+            showgrid=False,
+            showticklabels=False),
         xaxis_title="",
         margin_pad=5,
         paper_bgcolor="white",
@@ -233,63 +309,6 @@ def create_age_survival_chart(df):
     )
     
     return fig
-
-
-def create_family_survival_line(df):
-    """
-    Creates a line chart showing survival rate by family size.
-    
-    Args:
-        df (pd.DataFrame): Titanic dataset with FamilySize column
-        
-    Returns:
-        plotly.express.Figure: Line chart
-    """
-    
-    # Calculate survival rate by family size
-    family_survival = (
-        df.groupby("FamilySize")["Survived"]
-        .mean()
-        .reset_index()
-    )
-    family_survival["Survived"] = family_survival["Survived"] * 100
-    
-    # Create line chart using scatter with lines mode
-    fig = px.scatter(
-        family_survival,
-        x="FamilySize",
-        y="Survived",
-        title="Survival Rate by Family Size",
-        color_discrete_sequence=[config.BRAND_COLORS["blue"]]
-    )
-    
-    # Convert to line chart with markers
-    fig.update_traces(
-        mode="lines+markers",
-        marker=dict(size=10, color=config.BRAND_COLORS["orange"]),
-        line=dict(width=3, color=config.BRAND_COLORS["blue"]),
-        hovertemplate="Family Size: %{x}<br>Survival Rate: %{y:.0f}%<extra></extra>"
-    )
-    
-    fig.update_layout(
-        yaxis=dict(
-            title="",
-            gridcolor="rgba(200,200,200,0.3)",
-            ticksuffix="%"
-        ),
-        xaxis=dict(
-            title="",
-            gridcolor="rgba(200,200,200,0.3)"
-        ),
-        margin_pad=5,
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        margin=dict(t=60, b=40, l=60, r=40),
-        height=350
-    )
-    
-    return fig
-
 
 # ========================================================================
 #   Main Dashboard Creation

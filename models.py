@@ -257,13 +257,13 @@ def plot_feature_importance(model, feature_names):
         "Importance": importance * 100
     }).sort_values("Importance", ascending=True)
     
-    # NEW: Use Plotly Express instead of Graph Objects
+    # Create bar chart
     fig = px.bar(
         importance_df,
         x="Importance",
         y="Feature",
         orientation="h",
-        title="Feature Importance",
+        title="Feature Importance Scores",
         text="Importance",
         color_discrete_sequence=[config.BRAND_COLORS["blue"]]
     )
@@ -276,7 +276,7 @@ def plot_feature_importance(model, feature_names):
     
     fig.update_layout(
         xaxis=dict(
-            title="Importance Score",
+            title="",
             showgrid=False,
             showticklabels=False
         ),
@@ -288,7 +288,14 @@ def plot_feature_importance(model, feature_names):
         paper_bgcolor="white"
     )
     
-    fig.update_xaxes(gridcolor="rgba(200,200,200,0.3)")
+    # Add the vertical line at x=0 (the axis spine)
+    fig.update_xaxes(
+        zeroline=True,              # Show the zero line
+        zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
+        zerolinecolor="#DEDEDE",  # Light gray color
+        showline=False,
+        showgrid=False
+    )
     
     return fig
 
@@ -436,6 +443,22 @@ def plot_roc_curve(y_true, y_scores):
         legend=dict(x=0.6, y=0.1),
         xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
         yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
+    )
+    
+    fig.update_xaxes(
+        zeroline=True,              # Show the vertical zero line
+        zerolinewidth=0.5,          # Make it thin 
+        zerolinecolor="#DEDEDE",  # Light gray color
+        showline=False,
+        showgrid=False
+    )
+    
+    fig.update_yaxes(
+        zeroline=True,              # Show the horizontal zero line
+        zerolinewidth=0.5,          # Make it thin 
+        zerolinecolor="#DEDEDE",  # Light gray color
+        showline=False,
+        showgrid=False
     )
     
     return fig
