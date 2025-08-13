@@ -281,7 +281,8 @@ def plot_feature_importance(model, feature_names):
             showticklabels=False
         ),
         yaxis_title="",
-        height=400,
+        height=600,
+        width=1000,
         margin=dict(l=100, r=50, t=50, b=50),
         margin_pad=5,
         plot_bgcolor="white",
@@ -312,13 +313,13 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
         plotly.graph_objects.Figure: Confusion matrix heatmap
     """
     
-    # NEW: Create hover text with classification labels
+    # Create hover text with classification labels
     hover_text = [
         ["True Negatives (TN)", "False Positives (FP)"],
         ["False Negatives (FN)", "True Positives (TP)"]
     ]
     
-    # NEW: Create detailed hover template
+    # Create detailed hover template
     hover_details = []
     for i in range(2):
         row_details = []
@@ -367,13 +368,34 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
     )
     
     fig.update_layout(
-        height=400,
+        height=600,
         plot_bgcolor="white",
-        paper_bgcolor="white"
+        paper_bgcolor="white",
+        # NEW: Add margin for annotation
+        margin=dict(l=60, r=40, t=60, b=100)
     )
     
     # Hide color scale since values are shown on cells
     fig.update_coloraxes(showscale=False)
+    
+    # NEW: Add interpretation annotation in bottom-left corner
+    fig.add_annotation(
+        text=(
+            "<b>How to Read:</b><br>"
+            "• Diagonal (↘) = Correct predictions<br>"
+            "• Off-diagonal = Errors<br>"
+            "• Higher numbers on diagonal = Better model"
+        ),
+        xref="paper",
+        yref="paper",
+        x=0,  # Left side
+        y=-0.15,  # Below the plot
+        xanchor="left",
+        yanchor="top",
+        showarrow=False,
+        font=dict(size=11, color="gray"),
+        align="left"
+    )
     
     return fig
 
@@ -395,14 +417,14 @@ def plot_roc_curve(y_true, y_scores):
     fpr, tpr, thresholds = roc_curve(y_true, y_scores)
     roc_auc = auc(fpr, tpr)
     
-    # NEW: Create DataFrame for Plotly Express
+    # Create DataFrame for Plotly Express
     roc_df = pd.DataFrame({
         "False Positive Rate": fpr,
         "True Positive Rate": tpr,
-        "Model": f"ROC Curve (AUC = {roc_auc:.3f})"
+        "Model": f"ROC Curve (AUC = {roc_auc:.2f})"
     })
     
-    # Add diagonal reference line data
+    # Add diagonal reference line data for the Random Classifier
     diagonal_df = pd.DataFrame({
         "False Positive Rate": [0, 1],
         "True Positive Rate": [0, 1],
@@ -420,29 +442,38 @@ def plot_roc_curve(y_true, y_scores):
         color="Model",
         title="ROC Curve",
         color_discrete_map={
-            f"ROC Curve (AUC = {roc_auc:.3f})": config.BRAND_COLORS["blue"],
+            f"ROC Curve (AUC = {roc_auc:.2f})": config.BRAND_COLORS["blue"],
             "Random Classifier": "gray"
         }
     )
     
-    # Update line styles
+    # ROC curve annotation styling
     fig.update_traces(
         line=dict(width=2),
-        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.3f})")
+        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.2f})")
     )
+    
+    # Random Classifier annotation styling
     fig.update_traces(
-        line=dict(width=1, dash="dash"),
+        line=dict(
+            width=1, 
+            dash="dash"),
         selector=dict(name="Random Classifier")
     )
     
     # Update layout
     fig.update_layout(
-        height=400,
+        height=600,
         plot_bgcolor="white",
         paper_bgcolor="white",
         legend=dict(x=0.6, y=0.1),
-        xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
-        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
+        margin_pad=5,
+        xaxis=dict(
+            gridcolor="rgba(200,200,200,0.3)", 
+            range=[0, 1]),
+        yaxis=dict(
+            gridcolor="rgba(200,200,200,0.3)", 
+            range=[0, 1])
     )
     
     fig.update_xaxes(
