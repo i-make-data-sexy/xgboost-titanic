@@ -86,6 +86,83 @@ def index():
     except Exception as e:
         logger.error(f"Error creating dashboard: {str(e)}")
         return f"Error: {str(e)}", 500
+    
+
+# NEW: Add this route to your app.py file
+
+@app.route("/model_performance")
+def model_performance():
+    """
+    Display model performance metrics and evaluation charts.
+    """
+    
+    try:
+        # Check if model exists
+        model_path = config.SAVED_MODELS_DIR / config.MODEL_FILENAME
+        encoder_path = config.SAVED_MODELS_DIR / "encoders.pkl"
+        
+        if not model_path.exists():
+            return render_template("error.html", 
+                                 message="No trained model found. Please train the model first."), 404
+        
+        # Load model and encoders
+        model = joblib.load(model_path)
+        encoders = joblib.load(encoder_path)
+        
+        # Load data for evaluation
+        df = load_titanic_data()
+        
+        # Preprocess data (using saved encoders)
+        df_processed, _ = preprocessing.preprocess_data(
+            df, 
+            fit_encoders=False,
+            encoders=encoders
+        )
+        
+        # Get features and target
+        X = preprocessing.get_feature_matrix(df_processed)
+        y = df_processed[config.TARGET_COLUMN]
+        
+        # Split data (using same seed for consistency)
+        X_train, X_test, y_train, y_test = models.split_data(X, y)
+        
+        # Get predictions for metrics
+        y_pred = model.predict(X_test)
+        y_pred_proba = model.predict_proba(X_test)[:, 1]
+        
+        # Calculate metrics
+        from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
+        accuracy = accuracy_score(y_test, y_pred) * 100
+        roc_auc = roc_auc_score(y_test, y_pred_proba)
+        cm = confusion_matrix(y_test, y_pred)
+        
+        # Cross-validation score
+        cv_scores = models.cross_validate_model(model, X, y)
+        
+        # Create visualization charts
+        importance_fig = models.plot_feature_importance(model, X.columns.tolist())
+        confusion_fig = models.plot_confusion_matrix(cm)
+        roc_fig = models.plot_roc_curve(y_test, y_pred_proba)
+        
+        # Convert charts to JSON
+        importance_json = dashboard.convert_chart_to_json(importance_fig)
+        confusion_json = dashboard.convert_chart_to_json(confusion_fig)
+        roc_json = dashboard.convert_chart_to_json(roc_fig)
+        
+        # Render template with all data
+        return render_template(
+            "model_performance.html",
+            importance_chart=importance_json,
+            confusion_chart=confusion_json,
+            roc_chart=roc_json,
+            accuracy=f"{accuracy:.1f}",
+            roc_auc=f"{roc_auc:.3f}",
+            cv_score=f"{cv_scores['mean']:.3f} ± {cv_scores['std']:.3f}"
+        )
+        
+    except Exception as e:
+        logger.error(f"Error creating model performance dashboard: {str(e)}")
+        return f"Error: {str(e)}", 500
 
 
 @app.route("/predict", methods=["GET", "POST"])

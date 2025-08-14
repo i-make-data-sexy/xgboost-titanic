@@ -1,0 +1,51 @@
+{# Extend the base template #}
+{% extends "base.html" %}
+
+{# Set the page title - suggestion: "Model Performance Metrics" #}
+{% block title %}Titanic Model Performance Dashboard{% endblock %}
+
+{# Set the header text #}
+{% block header %}Titanic Model Performance Dashboard{% endblock %}
+
+{# Main content - model evaluation charts #}
+{% block content %}
+    {# Two-row layout for model performance charts #}
+    <div class="model-charts-grid">
+        {# First row: Feature Importance and Confusion Matrix #}
+        <div class="model-chart-row">
+            <div class="chart-container" id="importance-chart"></div>
+            <div class="chart-container" id="confusion-chart"></div>
+        </div>
+        
+        {# Second row: ROC Curve (centered) #}
+        <div class="model-chart-row">
+            <div class="chart-container chart-full-width" id="roc-chart"></div>
+        </div>
+    </div>
+
+    {# Model metrics summary cards #}
+    <div class="metrics-summary">
+        <div class="metric-card">
+            <span class="metric-label">Accuracy</span>
+            <span class="metric-value">{{ accuracy }}%</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">ROC AUC</span>
+            <span class="metric-value">{{ roc_auc }}</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">CV Score</span>
+            <span class="metric-value">{{ cv_score }}</span>
+        </div>
+    </div>
+
+    {# Hidden JSON data for charts #}
+    <script id="importance-chart-data" type="application/json">{{ importance_chart | safe }}</script>
+    <script id="confusion-chart-data" type="application/json">{{ confusion_chart | safe }}</script>
+    <script id="roc-chart-data" type="application/json">{{ roc_chart | safe }}</script>
+{% endblock %}
+
+{# Page-specific scripts #}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

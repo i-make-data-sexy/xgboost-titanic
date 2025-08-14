@@ -60,7 +60,7 @@ def split_data(X, y, test_size=None, random_state=None):
 #   Model Training
 # ========================================================================
 
-def train_basic_model(X_train, y_train, X_test=None, y_test=None):
+def train_basic_model(X_train, y_train, X_test=None, y_test=None, use_class_weight=False):
     """
     Trains a basic XGBoost model with default parameters.
     
@@ -69,6 +69,7 @@ def train_basic_model(X_train, y_train, X_test=None, y_test=None):
         y_train (pd.Series): Training target
         X_test (pd.DataFrame): Optional test features for evaluation
         y_test (pd.Series): Optional test target
+        use_class_weight (bool): Whether to balance class weights
         
     Returns:
         xgb.XGBClassifier: Trained model
@@ -76,12 +77,23 @@ def train_basic_model(X_train, y_train, X_test=None, y_test=None):
     
     print("\nTraining basic XGBoost model...")
     
+    # Calculate class weight if requested
+    if use_class_weight:
+        # Calculate ratio of negative to positive class
+        neg_count = (y_train == 0).sum()
+        pos_count = (y_train == 1).sum()
+        scale_pos_weight = neg_count / pos_count
+        print(f"Using class weight: {scale_pos_weight:.2f} (addressing {pos_count}/{neg_count} imbalance)")
+    else:
+        scale_pos_weight = 1.0
+    
     # Create model with default parameters
     model = xgb.XGBClassifier(
         **config.XGBOOST_DEFAULT_PARAMS,
         n_estimators=100,
         max_depth=4,
-        learning_rate=0.1
+        learning_rate=0.1,
+        scale_pos_weight=scale_pos_weight  # NEW: Class weight parameter
     )
     
     # Prepare evaluation set if test data provided
@@ -99,7 +111,7 @@ def train_basic_model(X_train, y_train, X_test=None, y_test=None):
     return model
 
 
-def tune_hyperparameters(X_train, y_train, param_grid=None, cv_folds=None):
+def tune_hyperparameters(X_train, y_train, param_grid=None, cv_folds=None, use_class_weight=False):
     """
     Performs hyperparameter tuning using GridSearchCV.
     
@@ -108,6 +120,7 @@ def tune_hyperparameters(X_train, y_train, param_grid=None, cv_folds=None):
         y_train (pd.Series): Training target
         param_grid (dict): Parameters to search
         cv_folds (int): Number of cross-validation folds
+        use_class_weight (bool): Whether to balance class weights
         
     Returns:
         xgb.XGBClassifier: Best tuned model
@@ -121,8 +134,20 @@ def tune_hyperparameters(X_train, y_train, param_grid=None, cv_folds=None):
     if cv_folds is None:
         cv_folds = config.CV_FOLDS
     
+    # Calculate class weight if requested
+    if use_class_weight:
+        neg_count = (y_train == 0).sum()
+        pos_count = (y_train == 1).sum()
+        scale_pos_weight = neg_count / pos_count
+        print(f"Using class weight: {scale_pos_weight:.2f}")
+    else:
+        scale_pos_weight = 1.0
+    
     # Base model for grid search
-    base_model = xgb.XGBClassifier(**config.XGBOOST_DEFAULT_PARAMS)
+    base_model = xgb.XGBClassifier(
+        **config.XGBOOST_DEFAULT_PARAMS,
+        scale_pos_weight=scale_pos_weight
+    )
     
     # Perform grid search
     grid_search = GridSearchCV(
@@ -254,10 +279,10 @@ def plot_feature_importance(model, feature_names):
     # Create DataFrame for plotting
     importance_df = pd.DataFrame({
         "Feature": feature_names,
-        "Importance": importance * 100
+        "Importance": importance * 100  # Convert to percentage
     }).sort_values("Importance", ascending=True)
     
-    # Create bar chart
+    # Use Plotly Express
     fig = px.bar(
         importance_df,
         x="Importance",
@@ -265,41 +290,39 @@ def plot_feature_importance(model, feature_names):
         orientation="h",
         title="Feature Importance Scores",
         text="Importance",
-        color_discrete_sequence=[config.BRAND_COLORS["blue"]]
+        color_discrete_sequence=[config.BRAND_COLORS["blue"]],
+        labels={"Importance": "Importance (%)"}
     )
     
-    # Format text on bars
+    # Format text on bars as percentages
     fig.update_traces(
         texttemplate="%{text:.1f}%",
         textposition="outside"
     )
     
+    max_x = importance_df["Importance"].max()
+    
     fig.update_layout(
         xaxis=dict(
             title="",
+            showticklabels=False,
+            zeroline=True,              # Show the zero line
+            zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
+            zerolinecolor="#DEDEDE",  # Light gray color
+            showline=False,
             showgrid=False,
-            showticklabels=False
+            range=[0, max_x * 1.15]
         ),
         yaxis_title="",
-        height=600,
-        width=1000,
-        margin=dict(l=100, r=50, t=50, b=50),
+        margin=dict(l=120, r=50, t=50, b=70),  # More space for labels
         margin_pad=5,
         plot_bgcolor="white",
         paper_bgcolor="white"
     )
     
-    # Add the vertical line at x=0 (the axis spine)
-    fig.update_xaxes(
-        zeroline=True,              # Show the zero line
-        zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
-        zerolinecolor="#DEDEDE",  # Light gray color
-        showline=False,
-        showgrid=False
-    )
+    fig.update_xaxes(gridcolor="rgba(200,200,200,0.3)")
     
     return fig
-
 
 def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
     """
@@ -313,13 +336,403 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
         plotly.graph_objects.Figure: Confusion matrix heatmap
     """
     
-    # Create hover text with classification labels
+    # Create hover text for each cell
+    hover_text = np.array([
+        [
+            f"<b>True Negatives (TN)</b><br>Count: {cm[0,0]}<br>Actual: {labels[0]}<br>Predicted: {labels[0]}<br><br>✅ Correctly predicted death",
+            f"<b>False Positives (FP)</b><br>Count: {cm[0,1]}<br>Actual: {labels[0]}<br>Predicted: {labels[1]}<br><br>❌ Incorrectly predicted survival<br>(False hope)"
+        ],
+        [
+            f"<b>False Negatives (FN)</b><br>Count: {cm[1,0]}<br>Actual: {labels[1]}<br>Predicted: {labels[0]}<br><br>❌ Missed a survivor<br>(Surprise survival)",
+            f"<b>True Positives (TP)</b><br>Count: {cm[1,1]}<br>Actual: {labels[1]}<br>Predicted: {labels[1]}<br><br>✅ Correctly predicted survival"
+        ]
+    ])
+    
+    # Create a color matrix - 1 for correct (diagonal), 0 for incorrect (off-diagonal)
+    color_matrix = np.zeros_like(cm, dtype=float)
+    np.fill_diagonal(color_matrix, 1)
+    
+    # Create custom colorscale - gray (0) to blue (1)
+    colorscale = [
+        [0, "#D3D3D3"],                      # Gray for incorrect predictions
+        [1, config.BRAND_COLORS["blue"]]     # Blue for correct predictions
+    ]
+    
+    # Use go.Heatmap
+    fig = go.Figure(data=go.Heatmap(
+        z=color_matrix,          # Use color matrix for colors (0 for gray, 1 for blue)
+        text=cm,                 # Display actual confusion matrix values
+        texttemplate="%{text}",  # Show the values
+        textfont={"size": 20, "color": "white"},
+        x=labels,
+        y=labels,
+        colorscale=colorscale,
+        showscale=False,
+        hovertext=hover_text,    # Use hovertext instead of customdata
+        hoverinfo="text"         # Show only the hover text
+    ))
+    
+    # Calculate accuracy metrics
+    total = cm.sum()
+    correct = cm[0,0] + cm[1,1]
+    incorrect = cm[0,1] + cm[1,0]
+    accuracy = (correct / total) * 100
+    error_rate = (incorrect / total) * 100
+    
+    # Update layout
+    fig.update_layout(
+        title="Confusion Matrix",
+        xaxis=dict(
+            title="Predicted",
+            side="bottom",
+            tickmode="array",
+            tickvals=[0, 1],
+            ticktext=labels
+        ),
+        yaxis=dict(
+            title="Actual",
+            tickmode="array",
+            tickvals=[0, 1],
+            ticktext=labels,
+            autorange="reversed"  # Flip y-axis to match standard confusion matrix
+        ),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        margin=dict(l=60, r=40, t=60, b=180)
+    )
+    
+    # Add interpretation annotation
+    fig.add_annotation(
+        text=(
+            "<b>How to Read:</b><br>"
+            f"• Blue cells = Correct predictions ({correct}/{total} = {accuracy:.1f}%)<br>"
+            f"• Gray cells = Incorrect predictions ({incorrect}/{total} = {error_rate:.1f}%)<br>"
+            f"• Model Accuracy: {accuracy:.1f}%"
+        ),
+        xref="paper",
+        yref="paper",
+        x=0,
+        y=-0.2,
+        xanchor="left",
+        yanchor="top",
+        showarrow=False,
+        font=dict(size=11, color="gray"),
+        align="left"
+    )
+    
+    return fig
+
+def find_optimal_threshold(y_true, y_scores, method="youden"):
+    """
+    Finds the optimal classification threshold using various methods.
+    
+    Args:
+        y_true (np.array): True labels
+        y_scores (np.array): Predicted probabilities
+        method (str): Method to find threshold
+            - "youden": Maximizes Youden's J statistic (TPR - FPR)
+            - "closest": Point closest to top-left corner
+            - "f1": Maximizes F1 score
+        
+    Returns:
+        dict: Optimal threshold and metrics
+    """
+    
+    from sklearn.metrics import roc_curve, f1_score
+    import numpy as np
+    
+    # Calculate ROC curve
+    fpr, tpr, thresholds = roc_curve(y_true, y_scores)
+    
+    if method == "youden":
+        # Youden's J statistic: maximize (sensitivity + specificity - 1)
+        j_scores = tpr - fpr
+        optimal_idx = np.argmax(j_scores)
+        
+    elif method == "closest":
+        # Find point closest to (0,1) - the perfect classifier
+        distances = np.sqrt((fpr - 0)**2 + (tpr - 1)**2)
+        optimal_idx = np.argmin(distances)
+        
+    elif method == "f1":
+        # Find threshold that maximizes F1 score
+        f1_scores = []
+        for threshold in thresholds:
+            y_pred = (y_scores >= threshold).astype(int)
+            f1 = f1_score(y_true, y_pred)
+            f1_scores.append(f1)
+        optimal_idx = np.argmax(f1_scores)
+    
+    else:
+        raise ValueError(f"Unknown method: {method}")
+    
+    # Get optimal values
+    optimal_threshold = thresholds[optimal_idx]
+    optimal_fpr = fpr[optimal_idx]
+    optimal_tpr = tpr[optimal_idx]
+    
+    # Calculate performance at this threshold
+    y_pred_optimal = (y_scores >= optimal_threshold).astype(int)
+    
+    return {
+        "threshold": optimal_threshold,
+        "fpr": optimal_fpr,
+        "tpr": optimal_tpr,
+        "sensitivity": optimal_tpr,  # True Positive Rate
+        "specificity": 1 - optimal_fpr,  # True Negative Rate
+        "accuracy": np.mean(y_true == y_pred_optimal),
+        "method": method
+    }
+
+
+def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
+    """
+    Creates a Plotly ROC curve with optional optimal threshold point.
+    
+    Args:
+        y_true (np.array): True labels
+        y_scores (np.array): Predicted probabilities
+        show_optimal (bool): Whether to show the optimal threshold point
+        
+    Returns:
+        tuple: (figure, optimal_threshold_dict)
+    """
+    
+    from sklearn.metrics import roc_curve, auc
+    
+    # Calculate ROC curve
+    fpr, tpr, _ = roc_curve(y_true, y_scores)
+    roc_auc = auc(fpr, tpr)
+    
+    # Find optimal threshold (the "elbow")
+    optimal = find_optimal_threshold(y_true, y_scores, method="youden")
+    
+    # Create DataFrame for Plotly Express
+    roc_df = pd.DataFrame({
+        "False Positive Rate": fpr,
+        "True Positive Rate": tpr,
+        "Model": f"ROC Curve (AUC = {roc_auc:.3f})"
+    })
+    
+    # Add diagonal reference line
+    diagonal_df = pd.DataFrame({
+        "False Positive Rate": [0, 1],
+        "True Positive Rate": [0, 1],
+        "Model": "Random Classifier"
+    })
+    
+    # Combine DataFrames
+    plot_df = pd.concat([roc_df, diagonal_df])
+    
+    # Create plot
+    fig = px.line(
+        plot_df,
+        x="False Positive Rate",
+        y="True Positive Rate",
+        color="Model",
+        title="ROC Curve",
+        color_discrete_map={
+            f"ROC Curve (AUC = {roc_auc:.3f})": config.BRAND_COLORS["blue"],
+            "Random Classifier": "gray"
+        }
+    )
+    
+    # Add optimal threshold point if requested
+    if show_optimal:
+        fig.add_scatter(
+            x=[optimal["fpr"]],
+            y=[optimal["tpr"]],
+            mode="markers",
+            marker=dict(
+                size=12,
+                color=config.BRAND_COLORS["orange"],
+                symbol="star"
+            ),
+            name=f"Optimal (threshold={optimal['threshold']:.3f})",
+            hovertemplate=(
+                f"<b>Optimal Threshold (Elbow)</b><br>"
+                f"Threshold: {optimal['threshold']:.3f}<br>"
+                f"Sensitivity: {optimal['sensitivity']:.1%}<br>"
+                f"Specificity: {optimal['specificity']:.1%}<br>"
+                f"FPR: {optimal['fpr']:.1%}<br>"
+                f"TPR: {optimal['tpr']:.1%}<br>"
+                "<extra></extra>"
+            )
+        )
+    
+    # Update line styles
+    fig.update_traces(
+        line=dict(width=2),
+        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.3f})")
+    )
+    fig.update_traces(
+        line=dict(width=1, dash="dash"),
+        selector=dict(name="Random Classifier")
+    )
+    
+    # Update layout
+    fig.update_layout(
+        height=400,
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        legend=dict(x=0.6, y=0.1),
+        xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
+        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
+    )
+    
+    return fig, optimal
+
+
+def plot_roc_curve(y_true, y_scores):
+    """
+    Creates a Plotly ROC curve with the optimal threshold highlighted.
+    This is a wrapper for plot_roc_curve_with_optimal for backward compatibility.
+    
+    Args:
+        y_true (np.array): True labels
+        y_scores (np.array): Predicted probabilities
+        
+    Returns:
+        plotly.graph_objects.Figure: ROC curve with optimal point
+    """
+    
+    # Call the enhanced version and return just the figure
+    fig, _ = plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True)
+    return fig
+
+
+def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
+    """
+    Creates a Plotly ROC curve with optional optimal threshold point.
+    
+    Args:
+        y_true (np.array): True labels
+        y_scores (np.array): Predicted probabilities
+        show_optimal (bool): Whether to show the optimal threshold point
+        
+    Returns:
+        tuple: (figure, optimal_threshold_dict)
+    """
+    
+    from sklearn.metrics import roc_curve, auc
+    
+    # Calculate ROC curve
+    fpr, tpr, _ = roc_curve(y_true, y_scores)
+    roc_auc = auc(fpr, tpr)
+    
+    # Find optimal threshold (the "elbow")
+    optimal = find_optimal_threshold(y_true, y_scores, method="youden")
+    
+    # Create DataFrame for Plotly Express
+    roc_df = pd.DataFrame({
+        "False Positive Rate": fpr,
+        "True Positive Rate": tpr,
+        "Model": f"ROC Curve (AUC = {roc_auc:.3f})"
+    })
+    
+    # Add diagonal reference line
+    diagonal_df = pd.DataFrame({
+        "False Positive Rate": [0, 1],
+        "True Positive Rate": [0, 1],
+        "Model": "Random Classifier"
+    })
+    
+    # Combine DataFrames
+    plot_df = pd.concat([roc_df, diagonal_df])
+    
+    # Create plot
+    fig = px.line(
+        plot_df,
+        x="False Positive Rate",
+        y="True Positive Rate",
+        color="Model",
+        title="ROC Curve",
+        color_discrete_map={
+            f"ROC Curve (AUC = {roc_auc:.3f})": config.BRAND_COLORS["blue"],
+            "Random Classifier": "gray"
+        }
+    )
+    
+    # Add optimal threshold point if requested
+    if show_optimal:
+        fig.add_scatter(
+            x=[optimal["fpr"]],
+            y=[optimal["tpr"]],
+            mode="markers",
+            marker=dict(
+                size=12,
+                color=config.BRAND_COLORS["orange"],
+                symbol="star"
+            ),
+            name=f"Optimal (threshold={optimal['threshold']:.3f})",
+            hovertemplate=(
+                f"<b>Optimal Threshold (Elbow)</b><br>"
+                f"Threshold: {optimal['threshold']:.3f}<br>"
+                f"Sensitivity: {optimal['sensitivity']:.1%}<br>"
+                f"Specificity: {optimal['specificity']:.1%}<br>"
+                f"FPR: {optimal['fpr']:.1%}<br>"
+                f"TPR: {optimal['tpr']:.1%}<br>"
+                "<extra></extra>"
+            )
+        )
+    
+    # Update line styles
+    fig.update_traces(
+        line=dict(width=2),
+        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.3f})")
+    )
+    fig.update_traces(
+        line=dict(width=1, dash="dash"),
+        selector=dict(name="Random Classifier")
+    )
+    
+    # Update layout
+    fig.update_layout(
+        height=400,
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        legend=dict(x=0.6, y=0.1),
+        xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
+        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
+    )
+    
+    return fig, optimal
+
+
+def plot_roc_curve(y_true, y_scores):
+    """
+    Creates a Plotly ROC curve with the optimal threshold highlighted.
+    This is a wrapper for plot_roc_curve_with_optimal for backward compatibility.
+    
+    Args:
+        y_true (np.array): True labels
+        y_scores (np.array): Predicted probabilities
+        
+    Returns:
+        plotly.graph_objects.Figure: ROC curve with optimal point
+    """
+    
+    # Call the enhanced version and return just the figure
+    fig, _ = plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True)
+    return fig
+    """
+    Creates a Plotly confusion matrix heatmap.
+    
+    Args:
+        cm (np.array): Confusion matrix
+        labels (list): Class labels
+        
+    Returns:
+        plotly.graph_objects.Figure: Confusion matrix heatmap
+    """
+    
+    # NEW: Create hover text with classification labels
     hover_text = [
         ["True Negatives (TN)", "False Positives (FP)"],
         ["False Negatives (FN)", "True Positives (TP)"]
     ]
     
-    # Create detailed hover template
+    # NEW: Create detailed hover template
     hover_details = []
     for i in range(2):
         row_details = []
@@ -350,81 +763,96 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
             row_details.append(text)
         hover_details.append(row_details)
     
-    # Create a color matrix - 1 for correct (diagonal), 0 for incorrect (off-diagonal)
-    color_matrix = np.zeros_like(cm, dtype=float)
-    np.fill_diagonal(color_matrix, 1)
-    
-    # Create custom colorscale - pink (0) to green (1)
-    colorscale = [
-        [0, config.BRAND_COLORS["pink"]],  # Incorrect predictions
-        [1, config.BRAND_COLORS["green"]]  # Correct predictions
-    ]
-    
-    # Use go.Heatmap instead of px.imshow for more control
-    fig = go.Figure(data=go.Heatmap(
-        z=color_matrix,  # Use color matrix for colors
-        text=cm,  # Use actual values for text
-        texttemplate="%{text}",  # Show the values
-        textfont={"size": 20},
+    # Use Plotly Express with custom hover data
+    fig = px.imshow(
+        cm,
+        labels=dict(x="Predicted", y="Actual", color="Count"),
         x=labels,
         y=labels,
-        colorscale=colorscale,
-        showscale=False,
+        text_auto=True,
+        color_continuous_scale=["white", config.BRAND_COLORS["blue"]],
+        title="Confusion Matrix"
+    )
+    
+    # Update hover template
+    fig.update_traces(
         customdata=hover_details,
         hovertemplate="%{customdata}<extra></extra>"
-    ))
+    )
     
-    # NEW: Calculate accuracy metrics
-    total = cm.sum()
-    correct = cm[0,0] + cm[1,1]  # Diagonal sum (TN + TP)
-    incorrect = cm[0,1] + cm[1,0]  # Off-diagonal sum (FP + FN)
-    accuracy = (correct / total) * 100
-    error_rate = (incorrect / total) * 100
-    
-    # Update layout
     fig.update_layout(
-        title="Confusion Matrix",
-        xaxis=dict(
-            title="Predicted",
-            side="bottom",
-            tickmode="array",
-            tickvals=[0, 1],
-            ticktext=labels
-        ),
-        yaxis=dict(
-            title="Actual",
-            tickmode="array",
-            tickvals=[0, 1],
-            ticktext=labels,
-            autorange="reversed"            # Flip y-axis to match standard confusion matrix
-        ),
-        width=700,
-        height=600,
+        height=400,
         plot_bgcolor="white",
-        paper_bgcolor="white",
-        margin=dict(l=60, r=40, t=60, b=180)
+        paper_bgcolor="white"
     )
     
-    # Add interpretation annotation in bottom-left corner
-    fig.add_annotation(
-        text=(
-            "<b>How to Read:</b><br>"
-            f"• Green cells = Correct predictions ({correct}/{total} = {accuracy:.1f}%)<br>"
-            f"• Pink cells = Incorrect predictions ({incorrect}/{total} = {error_rate:.1f}%)<br>"
-            f"• Model Accuracy: {accuracy:.1f}%"
-        ),
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=-0.2,
-        xanchor="left",
-        yanchor="top",
-        showarrow=False,
-        font=dict(size=11, color="gray"),
-        align="left"
-    )
+    # Hide color scale since values are shown on cells
+    fig.update_coloraxes(showscale=False)
     
     return fig
+
+
+def find_optimal_threshold(y_true, y_scores, method="youden"):
+    """
+    Finds the optimal classification threshold using various methods.
+    
+    Args:
+        y_true (np.array): True labels
+        y_scores (np.array): Predicted probabilities
+        method (str): Method to find threshold
+            - "youden": Maximizes Youden's J statistic (TPR - FPR)
+            - "closest": Point closest to top-left corner
+            - "f1": Maximizes F1 score
+        
+    Returns:
+        dict: Optimal threshold and metrics
+    """
+    
+    from sklearn.metrics import roc_curve, f1_score
+    import numpy as np
+    
+    # Calculate ROC curve
+    fpr, tpr, thresholds = roc_curve(y_true, y_scores)
+    
+    if method == "youden":
+        # Youden's J statistic: maximize (sensitivity + specificity - 1)
+        j_scores = tpr - fpr
+        optimal_idx = np.argmax(j_scores)
+        
+    elif method == "closest":
+        # Find point closest to (0,1) - the perfect classifier
+        distances = np.sqrt((fpr - 0)**2 + (tpr - 1)**2)
+        optimal_idx = np.argmin(distances)
+        
+    elif method == "f1":
+        # Find threshold that maximizes F1 score
+        f1_scores = []
+        for threshold in thresholds:
+            y_pred = (y_scores >= threshold).astype(int)
+            f1 = f1_score(y_true, y_pred)
+            f1_scores.append(f1)
+        optimal_idx = np.argmax(f1_scores)
+    
+    else:
+        raise ValueError(f"Unknown method: {method}")
+    
+    # Get optimal values
+    optimal_threshold = thresholds[optimal_idx]
+    optimal_fpr = fpr[optimal_idx]
+    optimal_tpr = tpr[optimal_idx]
+    
+    # Calculate performance at this threshold
+    y_pred_optimal = (y_scores >= optimal_threshold).astype(int)
+    
+    return {
+        "threshold": optimal_threshold,
+        "fpr": optimal_fpr,
+        "tpr": optimal_tpr,
+        "sensitivity": optimal_tpr,  # True Positive Rate
+        "specificity": 1 - optimal_fpr,  # True Negative Rate
+        "accuracy": np.mean(y_true == y_pred_optimal),
+        "method": method
+    }
 
 
 def plot_roc_curve(y_true, y_scores):
@@ -441,18 +869,18 @@ def plot_roc_curve(y_true, y_scores):
     
     from sklearn.metrics import roc_curve, auc
     
-    # Calculate ROC curve (include thresholds)
-    fpr, tpr, thresholds = roc_curve(y_true, y_scores)
+    # Calculate ROC curve
+    fpr, tpr, _ = roc_curve(y_true, y_scores)
     roc_auc = auc(fpr, tpr)
     
     # Create DataFrame for Plotly Express
     roc_df = pd.DataFrame({
         "False Positive Rate": fpr,
         "True Positive Rate": tpr,
-        "Model": f"ROC Curve (AUC = {roc_auc:.2f})"
+        "Model": f"ROC Curve (AUC = {roc_auc:.3f})"
     })
     
-    # Add diagonal reference line data for the Random Classifier
+    # Add diagonal reference line data
     diagonal_df = pd.DataFrame({
         "False Positive Rate": [0, 1],
         "True Positive Rate": [0, 1],
@@ -470,54 +898,29 @@ def plot_roc_curve(y_true, y_scores):
         color="Model",
         title="ROC Curve",
         color_discrete_map={
-            f"ROC Curve (AUC = {roc_auc:.2f})": config.BRAND_COLORS["blue"],
+            f"ROC Curve (AUC = {roc_auc:.3f})": config.BRAND_COLORS["blue"],
             "Random Classifier": "gray"
         }
     )
     
-    # ROC curve annotation styling
+    # Update line styles
     fig.update_traces(
         line=dict(width=2),
-        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.2f})")
+        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.3f})")
     )
-    
-    # Random Classifier annotation styling
     fig.update_traces(
-        line=dict(
-            width=1, 
-            dash="dash"),
+        line=dict(width=1, dash="dash"),
         selector=dict(name="Random Classifier")
     )
     
     # Update layout
     fig.update_layout(
-        height=600,
+        height=400,
         plot_bgcolor="white",
         paper_bgcolor="white",
         legend=dict(x=0.6, y=0.1),
-        margin_pad=5,
-        xaxis=dict(
-            gridcolor="rgba(200,200,200,0.3)", 
-            range=[0, 1]),
-        yaxis=dict(
-            gridcolor="rgba(200,200,200,0.3)", 
-            range=[0, 1])
-    )
-    
-    fig.update_xaxes(
-        zeroline=True,              # Show the vertical zero line
-        zerolinewidth=0.5,          # Make it thin 
-        zerolinecolor="#DEDEDE",  # Light gray color
-        showline=False,
-        showgrid=False
-    )
-    
-    fig.update_yaxes(
-        zeroline=True,              # Show the horizontal zero line
-        zerolinewidth=0.5,          # Make it thin 
-        zerolinecolor="#DEDEDE",  # Light gray color
-        showline=False,
-        showgrid=False
+        xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
+        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
     )
     
     return fig

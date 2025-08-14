@@ -72,6 +72,7 @@ XGBOOST_DEFAULT_PARAMS = {
     "objective": "binary:logistic",
     "eval_metric": "logloss",
     "random_state": RANDOM_STATE,
+    "enable_categorical": True,             # Enable categorical support for XGBoost
     "n_jobs": -1
 }
 
@@ -93,7 +94,9 @@ BRAND_COLORS = {
     "orange": "#FFA500",
     "green": "#8BB42D",
     "blue": "#0273BE",
-    "pink": "#E90555"
+    "pink": "#E90555",
+    "light_gray": "#DEDEDE",
+    "dark_gray": "#666"
 }
 
 # Color sequence for Plotly

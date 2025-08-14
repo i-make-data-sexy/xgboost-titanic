@@ -113,3 +113,170 @@ body {
     max-width: 100%;
     overflow: hidden;
 }
+
+
+/* ======================================================================
+   Charts
+   ======================================================================= */
+
+/* Model performance page specific styles */
+.model-charts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.model-chart-row {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.model-chart-row .chart-container {
+    flex: 1;
+    min-height: 600px;
+}
+
+.chart-full-width {
+    margin: 0 auto;
+}
+
+/* Metrics summary cards */
+.metrics-summary {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+    padding: 1rem;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.metric-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+/* Navigation menu styles */
+.nav-menu {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+/* ======================================================================
+   Button to Trigger Model Training
+   ======================================================================= */
+
+/* NEW: Model training section styles */
+.model-training-section {
+    margin: 2rem auto;
+    max-width: 100%;
+    padding: 0;
+}
+
+.training-card {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    margin: 0 1rem;
+}
+
+.training-card h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#model-status {
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.train-button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.train-button:hover:not(:disabled) {
+    background: #1557b0;
+}
+
+.train-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.training-message {
+    margin-top: 1rem;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.training-message a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.training-message a:hover {
+    text-decoration: underline;
+}

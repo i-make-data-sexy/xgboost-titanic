@@ -12,7 +12,6 @@ import config
 import preprocessing
 import models
 
-
 # ========================================================================
 #   Main Training Pipeline
 # ========================================================================
@@ -107,7 +106,7 @@ def train_pipeline(tune_hyperparameters=True):
     fig_cm = models.plot_confusion_matrix(metrics["confusion_matrix"])
     fig_cm.show()
     
-    # ROC curve
+    # ROC curve with optimal threshold point (elbow)
     fig_roc = models.plot_roc_curve(y_test, metrics["probabilities"])
     fig_roc.show()
     

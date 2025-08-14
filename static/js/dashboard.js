@@ -26,7 +26,7 @@ function renderPlot(containerId, scriptId) {
   /* ================================================
     Decode binary data
    ================================================ */
-   // This was the critical fix that 
+   // This was the critical fix that got Plotly charts working in my Flask app
 
   function decodeBinaryData(obj) {
     // Base64 decode helper
@@ -90,9 +90,25 @@ function renderPlot(containerId, scriptId) {
 }
 
 
+/* ======================================================================
+   Initialize charts based on current page
+   ======================================================================= */
+
 document.addEventListener('DOMContentLoaded', () => {
-  renderPlot('class-chart',   'class-chart-data');
-  renderPlot('gender-chart',  'gender-chart-data');
-  renderPlot('age-chart',     'age-chart-data');
-  renderPlot('family-chart',  'family-chart-data');
+  // Check which charts exist on the current page and render them
+  
+  // Survival Analysis Dashboard charts
+  if (document.getElementById('class-chart')) {
+    renderPlot('class-chart', 'class-chart-data');
+    renderPlot('gender-chart', 'gender-chart-data');
+    renderPlot('age-chart', 'age-chart-data');
+    renderPlot('family-chart', 'family-chart-data');
+  }
+  
+  // Model Performance Dashboard charts
+  if (document.getElementById('importance-chart')) {
+    renderPlot('importance-chart', 'importance-chart-data');
+    renderPlot('confusion-chart', 'confusion-chart-data');
+    renderPlot('roc-chart', 'roc-chart-data');
+  }
 });

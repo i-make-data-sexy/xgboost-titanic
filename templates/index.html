@@ -1,52 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{# Extend the base template #}
+{% extends "base.html" %}
 
-    {# Title #}
-    <title>Titanic Survival Analysis Dashboard</title>
+{# Set the page title #}
+{% block title %}Titanic Survival Analysis Dashboard{% endblock %}
 
-    {# Favicon for all pages #}
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-    
-    {# Custom CSS #}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{# Set the header text #}
+{% block header %}Titanic Survival Analysis{% endblock %}
 
-    {# Updated Plotly JS - Using latest CDN #}
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    
-    {# Grid layout styles for the charts #}
-</head>
-<body>
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>Titanic Survival Analysis</h1>
-        </div>
-        
-        {# Grid layout for 4 separate px charts #}
-        <div class="charts-grid">
+{# Main content - the 4 charts grid #}
+{% block content %}
+    {# Grid layout for 4 separate charts #}
+    <div class="charts-grid">
         <div class="chart-container" id="class-chart"></div>
         <div class="chart-container" id="gender-chart"></div>
         <div class="chart-container" id="family-chart"></div>
         <div class="chart-container" id="age-chart"></div>
-        
+    </div>
 
-        <!-- raw JSON payloads -->
-        <script id="class-chart-data"  type="application/json">{{ class_chart  | safe }}</script>
-        <script id="gender-chart-data" type="application/json">{{ gender_chart | safe }}</script>
-        <script id="family-chart-data" type="application/json">{{ family_chart | safe }}</script>
-        <script id="age-chart-data"    type="application/json">{{ age_chart    | safe }}</script>
-        </div>
-
-        
-        <div class="footer">
-            <a href="#">Blog Post</a> | 
-            <a href="#">GitHub Repo</a>
+    {# Model training section #}
+    <div class="model-training-section">
+        <div class="training-card">
+            <h3>Model Status</h3>
+            <p id="model-status">Checking model...</p>
+            <button id="train-model-btn" class="train-button">
+                <span id="btn-text">Train New Model</span>
+                <span id="btn-spinner" class="spinner hidden"></span>
+            </button>
+            <p id="training-message" class="training-message"></p>
         </div>
     </div>
-    
-    <!-- 2Plotly rendering logic lives in static/js/dashboard.js -->
+
+    {# Hidden JSON data for JavaScript to consume #}
+    <script id="class-chart-data" type="application/json">{{ class_chart | safe }}</script>
+    <script id="gender-chart-data" type="application/json">{{ gender_chart | safe }}</script>
+    <script id="family-chart-data" type="application/json">{{ family_chart | safe }}</script>
+    <script id="age-chart-data" type="application/json">{{ age_chart | safe }}</script>
+{% endblock %}
+
+{# Page-specific scripts #}
+{% block scripts %}
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-</body>
-</html>
+    
+    {# NEW: Training functionality #}
+    <script>
+        // Check model status on page load
+        fetch('/model-info')
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('model-status').textContent = '✓ Model trained and ready';
+                    document.getElementById('model-status').style.color = 'green';
+                    document.getElementById('btn-text').textContent = 'Retrain Model';
+                } else {
+                    document.getElementById('model-status').textContent = '⚠ No model found';
+                    document.getElementById('model-status').style.color = 'orange';
+                    document.getElementById('btn-text').textContent = 'Train Initial Model';
+                }
+            });
+        
+        // Handle model training
+        document.getElementById('train-model-btn').addEventListener('click', async function() {
+            const btn = this;
+            const btnText = document.getElementById('btn-text');
+            const spinner = document.getElementById('btn-spinner');
+            const message = document.getElementById('training-message');
+            
+            // Disable button and show spinner
+            btn.disabled = true;
+            btnText.textContent = 'Training...';
+            spinner.classList.remove('hidden');
+            message.textContent = 'Model in training 🏋️‍♂️';
+            message.style.color = 'blue';
+            
+            try {
+                const response = await fetch('/retrain', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tune_hyperparameters: true
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Success
+                    message.innerHTML = `
+                        ✓ Model trained successfully!<br>
+                        Accuracy: ${result.metrics.accuracy}%<br>
+                        <a href="/model_performance">View Performance Metrics →</a>
+                    `;
+                    message.style.color = 'green';
+                    
+                    // Update status
+                    document.getElementById('model-status').textContent = '✓ Model trained and ready';
+                    document.getElementById('model-status').style.color = 'green';
+                    btnText.textContent = 'Retrain Model';
+                } else {
+                    // Error
+                    message.textContent = `Error: ${result.error}`;
+                    message.style.color = 'red';
+                    btnText.textContent = 'Try Again';
+                }
+            } catch (error) {
+                message.textContent = `Error: ${error.message}`;
+                message.style.color = 'red';
+                btnText.textContent = 'Try Again';
+            } finally {
+                // Re-enable button and hide spinner
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+            }
+        });
+    </script>
+{% endblock %}

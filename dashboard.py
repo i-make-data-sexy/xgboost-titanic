@@ -84,9 +84,9 @@ def create_class_survival_chart(df):
     
     fig.update_xaxes(
         # visible=False,
-        zeroline=True,              # Show the zero line
-        zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
-        zerolinecolor="#DEDEDE",  # Light gray color
+        zeroline=True,                          # Show the zero line
+        zerolinewidth=1,                        # Make it thin (adjust as needed: 0.5 for thinner)
+        zerolinecolor="#DEDEDE",              # Light gray color
         showline=False,
         showgrid=False,
         title="",
@@ -198,7 +198,7 @@ def create_family_survival_line(df):
             title="",
             gridcolor="rgba(200,200,200,0.3)",
             ticksuffix="%",
-            zeroline=False,         # Let the grid line at 0% be the only line
+            zeroline=False,                     # Let the grid line at 0% be the only line
             showgrid=True,
         ),
         xaxis=dict(
@@ -229,7 +229,7 @@ def create_age_survival_chart(df):
     
     # Create survival counts by age group
     age_survival = (
-        df.groupby(["AgeGroup", "Survived"], observed=False)
+        df.groupby(["AgeGroup", "Survived"], observed=True)
         .size()
         .reset_index(name="Count")
     )
@@ -287,9 +287,9 @@ def create_age_survival_chart(df):
         legend_title_text="",
         yaxis=dict(
             title="", 
-            zeroline=True,              # Show the zero line
-            zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
-            zerolinecolor="#DEDEDE",  # Light gray color
+            zeroline=True,                      # Show the zero line
+            zerolinewidth=1,                    # Make it thin (adjust as needed: 0.5 for thinner)
+            zerolinecolor="#DEDEDE",          # Light gray color
             showline=False,
             showgrid=False,
             showticklabels=False),

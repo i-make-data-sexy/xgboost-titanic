@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {# Dynamic page title with default fallback #}
+    <title>{% block title %}Titanic ML Dashboard{% endblock %}</title>
+
+    {# Favicon for all pages #}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+    
+    {# Custom CSS - available to all pages #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    {# Plotly JS - latest CDN version #}
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    
+    {# Block for additional head content (page-specific styles/scripts) #}
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-container">
+        {# Header with dynamic title #}
+        <div class="header">
+            <h1>{% block header %}Titanic ML Dashboard{% endblock %}</h1>
+            {# Optional navigation menu #}
+            {% block navigation %}
+            <nav class="nav-menu">
+                <a href="{{ url_for('index') }}" class="nav-link">Survival Analysis</a>
+                <a href="{{ url_for('model_performance') }}" class="nav-link">Model Performance</a>
+                <a href="{{ url_for('predict') }}" class="nav-link">Make Prediction</a>
+            </nav>
+            {% endblock %}
+        </div>
+        
+        {# Main content area - child templates fill this #}
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+        
+        {# Footer - consistent across all pages #}
+        <div class="footer">
+            {% block footer %}
+            <a href="{{ url_for('index') }}">Data Exploration Dashboard</a> | 
+            <a href="{{ url_for('model_performance') }}">Model Performance Dashboard</a> | 
+            <a href="#">GitHub Repo</a> | 
+            <a href="{{ url_for('model_info') }}">Model Info</a>
+            {% endblock %}
+        </div>
+    </div>
+    
+    {# Block for page-specific scripts at bottom #}
+    {% block scripts %}{% endblock %}
+</body>
+</html>
