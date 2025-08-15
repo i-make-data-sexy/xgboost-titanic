@@ -88,7 +88,7 @@ def index():
         return f"Error: {str(e)}", 500
     
 
-# NEW: Add this route to your app.py file
+# Add this route to your app.py file
 
 @app.route("/model_performance")
 def model_performance():
@@ -131,10 +131,15 @@ def model_performance():
         y_pred_proba = model.predict_proba(X_test)[:, 1]
         
         # Calculate metrics
-        from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
+        from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix, precision_score, recall_score, f1_score
         accuracy = accuracy_score(y_test, y_pred) * 100
         roc_auc = roc_auc_score(y_test, y_pred_proba)
         cm = confusion_matrix(y_test, y_pred)
+        
+        # NEW: Calculate additional metrics
+        precision = precision_score(y_test, y_pred) * 100
+        recall = recall_score(y_test, y_pred) * 100
+        f1 = f1_score(y_test, y_pred)
         
         # Cross-validation score
         cv_scores = models.cross_validate_model(model, X, y)
@@ -157,7 +162,11 @@ def model_performance():
             roc_chart=roc_json,
             accuracy=f"{accuracy:.1f}",
             roc_auc=f"{roc_auc:.3f}",
-            cv_score=f"{cv_scores['mean']:.3f} ± {cv_scores['std']:.3f}"
+            cv_score=f"{cv_scores['mean']:.3f} ± {cv_scores['std']:.3f}",
+            # NEW: Pass additional metrics
+            precision=f"{precision:.1f}",
+            recall=f"{recall:.1f}",
+            f1_score=f"{f1:.3f}"
         )
         
     except Exception as e:
@@ -239,21 +248,32 @@ def retrain():
     """
     
     try:
+        # Add detailed logging
+        logger.info("=" * 60)
+        logger.info("RETRAIN ENDPOINT CALLED")
+        logger.info("=" * 60)
+        
         # Import training script
         from train import train_pipeline
         
         # Get training parameters from request
         tune_hyperparameters = request.json.get("tune_hyperparameters", True)
+        logger.info(f"Hyperparameter tuning: {tune_hyperparameters}")
         
         # Run training pipeline
-        logger.info("Starting model retraining...")
-        results = train_pipeline(tune_hyperparameters=tune_hyperparameters)
+        logger.info("Starting model retraining via web interface...")  
+        results = train_pipeline(tune_hyperparameters=tune_hyperparameters, show_plots=False)
+        logger.info("Training pipeline completed")  
+        
+        # Log what we're returning
+        logger.info("Returning JSON response - no tabs should have opened")
         
         # Return training results
         return jsonify({
             "status": "success",
             "metrics": {
-                "accuracy": float(results["metrics"]["accuracy"]),
+                # Format accuracy to 1 decimal place
+                "accuracy": round(float(results["metrics"]["accuracy"]) * 100, 1),
                 "roc_auc": float(results["metrics"]["roc_auc"]),
                 "cv_mean": float(results["cv_scores"]["mean"]),
                 "cv_std": float(results["cv_scores"]["std"])
@@ -262,6 +282,7 @@ def retrain():
         
     except Exception as e:
         logger.error(f"Retraining error: {str(e)}")
+        logger.error(f"Full traceback:", exc_info=True)  # Full error details
         return jsonify({"error": str(e)}), 500
 
 

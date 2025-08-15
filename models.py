@@ -17,6 +17,15 @@ import plotly.graph_objects as go
 import plotly.express as px
 from pathlib import Path
 import config
+import logging
+
+
+# ========================================================================
+#   Instantiate Logger
+# ========================================================================
+
+logger = logging.getLogger(__name__)
+
 
 # ========================================================================
 #   Data Splitting
@@ -93,7 +102,7 @@ def train_basic_model(X_train, y_train, X_test=None, y_test=None, use_class_weig
         n_estimators=100,
         max_depth=4,
         learning_rate=0.1,
-        scale_pos_weight=scale_pos_weight  # NEW: Class weight parameter
+        scale_pos_weight=scale_pos_weight  # Class weight parameter
     )
     
     # Prepare evaluation set if test data provided
@@ -109,7 +118,6 @@ def train_basic_model(X_train, y_train, X_test=None, y_test=None, use_class_weig
     print("✓ Basic model trained successfully")
     
     return model
-
 
 def tune_hyperparameters(X_train, y_train, param_grid=None, cv_folds=None, use_class_weight=False):
     """
@@ -168,7 +176,6 @@ def tune_hyperparameters(X_train, y_train, param_grid=None, cv_folds=None, use_c
         print(f"  - {param}: {value}")
     
     return grid_search.best_estimator_
-
 
 def cross_validate_model(model, X, y, cv_folds=None):
     """
@@ -242,7 +249,7 @@ def evaluate_model(model, X_test, y_test):
     print("\nClassification Report:")
     print(classification_report(
         y_test, y_pred,
-        target_names=["Not Survived", "Survived"]
+        target_names=["Did Not Survive", "Survived"]
     ))
     
     # Confusion matrix
@@ -272,6 +279,8 @@ def plot_feature_importance(model, feature_names):
     Returns:
         plotly.graph_objects.Figure: Feature importance chart
     """
+    # Start logging
+    logger.info("plot_feature_importance called - should NOT open new tab")
     
     # Get feature importance
     importance = model.feature_importances_
@@ -322,9 +331,12 @@ def plot_feature_importance(model, feature_names):
     
     fig.update_xaxes(gridcolor="rgba(200,200,200,0.3)")
     
+    # Log status
+    logger.info("Returning feature importance figure without showing")
+    
     return fig
 
-def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
+def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
     """
     Creates a Plotly confusion matrix heatmap.
     
@@ -336,40 +348,52 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
         plotly.graph_objects.Figure: Confusion matrix heatmap
     """
     
+    # Start logging
+    logger.info("plot_confusion_matrix called - should NOT open new tab")
+    
+    # Debug the confusion matrix values
+    logger.debug(f"Confusion matrix shape: {cm.shape}")
+    logger.debug(f"Confusion matrix values:\n{cm}")
+    
     # Create hover text for each cell
     hover_text = np.array([
         [
-            f"<b>True Negatives (TN)</b><br>Count: {cm[0,0]}<br>Actual: {labels[0]}<br>Predicted: {labels[0]}<br><br>✅ Correctly predicted death",
-            f"<b>False Positives (FP)</b><br>Count: {cm[0,1]}<br>Actual: {labels[0]}<br>Predicted: {labels[1]}<br><br>❌ Incorrectly predicted survival<br>(False hope)"
+            f"<b>True Negatives (TN)</b><br>Correctly predicted death<br><br>Predicted: {labels[0]}<br>Actual: {labels[0]}<br><br>Count: {cm[0,0]}",
+            f"<b>False Positives (FP)</b><br>Missed non-survivors<br><br>Predicted: {labels[1]}<br>Actual: {labels[0]}<br><br>Count: {cm[0,1]}"
         ],
         [
-            f"<b>False Negatives (FN)</b><br>Count: {cm[1,0]}<br>Actual: {labels[1]}<br>Predicted: {labels[0]}<br><br>❌ Missed a survivor<br>(Surprise survival)",
-            f"<b>True Positives (TP)</b><br>Count: {cm[1,1]}<br>Actual: {labels[1]}<br>Predicted: {labels[1]}<br><br>✅ Correctly predicted survival"
+            f"<b>False Negatives (FN)</b><br>Missed survivors<br><br>Predicted: {labels[0]}<br>Actual: {labels[1]}<br><br>Count: {cm[1,0]}",
+            f"<b>True Positives (TP)</b><br>Correctly predicted survival<br><br>Predicted: {labels[1]}<br>Actual: {labels[1]}<br><br>Count: {cm[1,1]}"
         ]
     ])
     
-    # Create a color matrix - 1 for correct (diagonal), 0 for incorrect (off-diagonal)
-    color_matrix = np.zeros_like(cm, dtype=float)
-    np.fill_diagonal(color_matrix, 1)
+    # Create two separate arrays - one for colors, one for display
+    # The z array determines colors, text array shows values
+    z_for_colors = [[1, 0], [0, 1]]  
     
-    # Create custom colorscale - gray (0) to blue (1)
+    # Custom colorscale - only two colors needed
     colorscale = [
-        [0, "#D3D3D3"],                      # Gray for incorrect predictions
-        [1, config.BRAND_COLORS["blue"]]     # Blue for correct predictions
+        [0, "#D3D3D3"],                       # Gray for value 0 (incorrect)
+        [1, config.BRAND_COLORS["blue"]]        # Blue for value 1 (correct)
     ]
+    
+    # Create text annotations for display
+    text_display = [[str(cm[i,j]) for j in range(2)] for i in range(2)]
     
     # Use go.Heatmap
     fig = go.Figure(data=go.Heatmap(
-        z=color_matrix,          # Use color matrix for colors (0 for gray, 1 for blue)
-        text=cm,                 # Display actual confusion matrix values
-        texttemplate="%{text}",  # Show the values
-        textfont={"size": 20, "color": "white"},
+        z=z_for_colors,                           # Use binary matrix for colors
+        text=text_display,                        # Use string version of values
+        texttemplate="%{text}",                       # Show the values
+        textfont={"size": 14, "color": "white"},  
         x=labels,
         y=labels,
         colorscale=colorscale,
         showscale=False,
-        hovertext=hover_text,    # Use hovertext instead of customdata
-        hoverinfo="text"         # Show only the hover text
+        hovertext=hover_text,
+        hoverinfo="text",
+        zmin=0,                  # Explicitly set min
+        zmax=1                   # Explicitly set max
     ))
     
     # Calculate accuracy metrics
@@ -394,8 +418,10 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
             tickmode="array",
             tickvals=[0, 1],
             ticktext=labels,
-            autorange="reversed"  # Flip y-axis to match standard confusion matrix
+            autorange="reversed"
         ),
+        margin_pad=5,
+        height=600,
         plot_bgcolor="white",
         paper_bgcolor="white",
         margin=dict(l=60, r=40, t=60, b=180)
@@ -420,6 +446,11 @@ def plot_confusion_matrix(cm, labels=["Not Survived", "Survived"]):
         align="left"
     )
     
+    # Extra logging
+    logger.info("Returning confusion matrix figure without showing")
+    logger.debug(f"z_for_colors matrix: {z_for_colors}")
+    logger.debug(f"Actual CM values: {cm}")
+    
     return fig
 
 def find_optimal_threshold(y_true, y_scores, method="youden"):
@@ -483,7 +514,6 @@ def find_optimal_threshold(y_true, y_scores, method="youden"):
         "accuracy": np.mean(y_true == y_pred_optimal),
         "method": method
     }
-
 
 def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
     """
@@ -572,7 +602,6 @@ def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
     
     # Update layout
     fig.update_layout(
-        height=400,
         plot_bgcolor="white",
         paper_bgcolor="white",
         legend=dict(x=0.6, y=0.1),
@@ -581,7 +610,6 @@ def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
     )
     
     return fig, optimal
-
 
 def plot_roc_curve(y_true, y_scores):
     """
@@ -596,10 +624,15 @@ def plot_roc_curve(y_true, y_scores):
         plotly.graph_objects.Figure: ROC curve with optimal point
     """
     
+    # Start logging
+    logger.info("plot_roc_curve called - should NOT open new tab")
+    
     # Call the enhanced version and return just the figure
     fig, _ = plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True)
+    
+    # Log before returning
+    logger.info("Returning ROC curve figure without showing")
     return fig
-
 
 def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
     """
@@ -688,7 +721,6 @@ def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
     
     # Update layout
     fig.update_layout(
-        height=400,
         plot_bgcolor="white",
         paper_bgcolor="white",
         legend=dict(x=0.6, y=0.1),
@@ -697,7 +729,6 @@ def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
     )
     
     return fig, optimal
-
 
 def plot_roc_curve(y_true, y_scores):
     """
@@ -715,83 +746,7 @@ def plot_roc_curve(y_true, y_scores):
     # Call the enhanced version and return just the figure
     fig, _ = plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True)
     return fig
-    """
-    Creates a Plotly confusion matrix heatmap.
-    
-    Args:
-        cm (np.array): Confusion matrix
-        labels (list): Class labels
-        
-    Returns:
-        plotly.graph_objects.Figure: Confusion matrix heatmap
-    """
-    
-    # NEW: Create hover text with classification labels
-    hover_text = [
-        ["True Negatives (TN)", "False Positives (FP)"],
-        ["False Negatives (FN)", "True Positives (TP)"]
-    ]
-    
-    # NEW: Create detailed hover template
-    hover_details = []
-    for i in range(2):
-        row_details = []
-        for j in range(2):
-            count = cm[i, j]
-            classification = hover_text[i][j]
-            actual = labels[i]
-            predicted = labels[j]
-            
-            # Build hover text
-            text = (
-                f"<b>{classification}</b><br>"
-                f"Count: {count}<br>"
-                f"Actual: {actual}<br>"
-                f"Predicted: {predicted}<br>"
-            )
-            
-            # Add interpretation
-            if i == 0 and j == 0:  # TN
-                text += "<br>✅ Correctly predicted death"
-            elif i == 0 and j == 1:  # FP
-                text += "<br>❌ Incorrectly predicted survival<br>(False hope)"
-            elif i == 1 and j == 0:  # FN
-                text += "<br>❌ Missed a survivor<br>(Surprise survival)"
-            else:  # TP
-                text += "<br>✅ Correctly predicted survival"
-            
-            row_details.append(text)
-        hover_details.append(row_details)
-    
-    # Use Plotly Express with custom hover data
-    fig = px.imshow(
-        cm,
-        labels=dict(x="Predicted", y="Actual", color="Count"),
-        x=labels,
-        y=labels,
-        text_auto=True,
-        color_continuous_scale=["white", config.BRAND_COLORS["blue"]],
-        title="Confusion Matrix"
-    )
-    
-    # Update hover template
-    fig.update_traces(
-        customdata=hover_details,
-        hovertemplate="%{customdata}<extra></extra>"
-    )
-    
-    fig.update_layout(
-        height=400,
-        plot_bgcolor="white",
-        paper_bgcolor="white"
-    )
-    
-    # Hide color scale since values are shown on cells
-    fig.update_coloraxes(showscale=False)
-    
-    return fig
-
-
+ 
 def find_optimal_threshold(y_true, y_scores, method="youden"):
     """
     Finds the optimal classification threshold using various methods.
@@ -853,7 +808,6 @@ def find_optimal_threshold(y_true, y_scores, method="youden"):
         "accuracy": np.mean(y_true == y_pred_optimal),
         "method": method
     }
-
 
 def plot_roc_curve(y_true, y_scores):
     """
@@ -915,7 +869,6 @@ def plot_roc_curve(y_true, y_scores):
     
     # Update layout
     fig.update_layout(
-        height=400,
         plot_bgcolor="white",
         paper_bgcolor="white",
         legend=dict(x=0.6, y=0.1),
@@ -955,7 +908,6 @@ def save_model(model, filepath=None):
     print(f"✓ Model saved to: {filepath}")
     
     return filepath
-
 
 def load_model(filepath=None):
     """
@@ -1025,7 +977,6 @@ def predict_single(model, passenger_data, encoders):
         "survival_probability": float(probability[1]),
         "death_probability": float(probability[0])
     }
-
 
 def predict_batch(model, df, encoders):
     """

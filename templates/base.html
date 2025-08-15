@@ -24,14 +24,6 @@
         {# Header with dynamic title #}
         <div class="header">
             <h1>{% block header %}Titanic ML Dashboard{% endblock %}</h1>
-            {# Optional navigation menu #}
-            {% block navigation %}
-            <nav class="nav-menu">
-                <a href="{{ url_for('index') }}" class="nav-link">Survival Analysis</a>
-                <a href="{{ url_for('model_performance') }}" class="nav-link">Model Performance</a>
-                <a href="{{ url_for('predict') }}" class="nav-link">Make Prediction</a>
-            </nav>
-            {% endblock %}
         </div>
         
         {# Main content area - child templates fill this #}
@@ -43,9 +35,9 @@
         <div class="footer">
             {% block footer %}
             <a href="{{ url_for('index') }}">Data Exploration Dashboard</a> | 
-            <a href="{{ url_for('model_performance') }}">Model Performance Dashboard</a> | 
-            <a href="#">GitHub Repo</a> | 
-            <a href="{{ url_for('model_info') }}">Model Info</a>
+            <a href="{{ url_for('model_performance') }}">Model Performance Dashboard</a> |  
+            <a href="{{ url_for('model_info') }}">Model Info</a> | 
+            <a href="#">GitHub Repo</a>
             {% endblock %}
         </div>
     </div>

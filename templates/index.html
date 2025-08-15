@@ -43,16 +43,19 @@
     
     {# NEW: Training functionality #}
     <script>
+        // NEW: Add this to find the culprit
+        console.log("Retrain button clicked - checking for window.open calls");
+        
         // Check model status on page load
         fetch('/model-info')
             .then(response => {
                 if (response.ok) {
-                    document.getElementById('model-status').textContent = '✓ Model trained and ready';
-                    document.getElementById('model-status').style.color = 'green';
+                    document.getElementById('model-status').textContent = '✓ Trained and ready';
+                    document.getElementById('model-status').style.color = '#8BB42D';
                     document.getElementById('btn-text').textContent = 'Retrain Model';
                 } else {
                     document.getElementById('model-status').textContent = '⚠ No model found';
-                    document.getElementById('model-status').style.color = 'orange';
+                    document.getElementById('model-status').style.color = '#FFA500';
                     document.getElementById('btn-text').textContent = 'Train Initial Model';
                 }
             });

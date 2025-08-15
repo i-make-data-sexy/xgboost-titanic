@@ -9,6 +9,57 @@
 
 {# Main content - model evaluation charts #}
 {% block content %}
+    <h2>Executive Summary</h2>
+    {# NEW: Executive Summary at the top #}
+    <div class="executive-summary">
+        <div class="metrics-summary">
+            <div class="metric-card">
+                <span class="metric-label">
+                    Accuracy
+                    <span class="info-icon" data-tooltip="The percentage of all predictions (both survived and not survived) that the model got correct. Higher is better. Above 75% is good, above 85% is excellent.">ⓘ</span>
+                </span>
+                <span class="metric-value">{{ accuracy }}%</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">
+                    ROC AUC
+                    <span class="info-icon" data-tooltip="Area Under the ROC Curve (pictured in the line chart below) measures how well the model distinguishes between survivors and non-survivors. Higher is better. Values range from 0.5 (random guessing) to 1.0 (perfect). Above 0.7 is acceptable, above 0.8 is good, above 0.9 is excellent.">ⓘ</span>
+                </span>
+                <span class="metric-value">{{ roc_auc }}</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">
+                    CV Score
+                    <span class="info-icon" data-tooltip="Cross-Validation Score shows how consistently the model performs across different data splits. The ± value shows the variation. Higher scores are better, while lower variation is better (i.e., more consistent). Scores above 0.8 with variation below ±0.05 indicate stable, reliable performance.">ⓘ</span>
+                </span>
+                <span class="metric-value">{{ cv_score }}</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">
+                    Precision
+                    <span class="info-icon" data-tooltip="Of all passengers the model predicted would survive, what percentage actually survived? Higher is better. Above 70% is good, above 80% is excellent. Higher precision means fewer false positives (i.e., fewer times the model predicted a passenger who died would have survived, providing false hope).">ⓘ</span>
+                </span>
+                <span class="metric-value">{{ precision }}%</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">
+                    Recall
+                    <span class="info-icon" data-tooltip="Of all passengers who actually survived, what percentage did the model correctly identify? Higher is better. Above 60% is acceptable, above 70% is good, above 80% is excellent. Lower recall means more missed survivors. There's often a trade-off between precision and recall.">ⓘ</span>
+                </span>
+                <span class="metric-value">{{ recall }}%</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">
+                    F1 Score
+                    <span class="info-icon" data-tooltip="The harmonic mean of precision and recall, balancing both metrics. Higher is better. Ranges from 0 to 1. Above 0.6 is acceptable, above 0.7 is good, above 0.8 is excellent. Useful when you need a single metric that considers both false positives and false negatives.">ⓘ</span>
+                </span>
+                <span class="metric-value">{{ f1_score }}</span>
+            </div>
+        </div>
+    </div>
+
+    <h2>Performance Scores</h2>
+
     {# Two-row layout for model performance charts #}
     <div class="model-charts-grid">
         {# First row: Feature Importance and Confusion Matrix #}
@@ -20,22 +71,6 @@
         {# Second row: ROC Curve (centered) #}
         <div class="model-chart-row">
             <div class="chart-container chart-full-width" id="roc-chart"></div>
-        </div>
-    </div>
-
-    {# Model metrics summary cards #}
-    <div class="metrics-summary">
-        <div class="metric-card">
-            <span class="metric-label">Accuracy</span>
-            <span class="metric-value">{{ accuracy }}%</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-label">ROC AUC</span>
-            <span class="metric-value">{{ roc_auc }}</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-label">CV Score</span>
-            <span class="metric-value">{{ cv_score }}</span>
         </div>
     </div>
 

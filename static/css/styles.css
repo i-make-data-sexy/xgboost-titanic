@@ -1,3 +1,119 @@
+/* ========================================================================
+   Variables
+   ======================================================================== */
+
+ :root {
+
+    /* ===============================
+        Text
+        ============================== */
+    
+        /* Font Family */
+        --font-family-main: "EkMukta-Light", Helvetica, sans-serif;
+    
+        /* Paragraph Size */
+        --font-size-p: 20px;
+    
+        /* Font Weights */
+        --font-weight-normal: 200;
+        --font-weight-bold: 400;
+        --font-weight-bolder: 600;
+    
+        /* Heading Sizes: Large */
+        --h1-size-lg: 48px;
+        --h2-size-lg: 40px;
+        --h3-size-lg: 30px;
+        --h4-size-lg: 27px;
+        --h5-size-lg: 23px;
+        
+        /* Heading Sizes: Medium */
+        --h1-size-md: 45px;
+        --h2-size-md: 37px;
+        --h3-size-md: 27px;
+        --h4-size-md: 25px;
+        
+        /* Heading Sizes: Small */
+        --h1-size-sm: 42px;
+        --h2-size-sm: 34px;
+        --h3-size-sm: 24px;
+        --h4-size-sm: 21px;
+    
+        /* Heading Sizes: Very Small */
+        --h1-size-sm: 39px;
+        --h2-size-sm: 31px;
+        --h3-size-sm: 21px;
+    
+        /* Line Height */
+        --line-height-tight: 1.25;
+        --line-height-normal: 1.5;
+        --line-height-loose: 1.75;
+    
+    
+    /* ===============================
+        Colors
+        ============================== */
+    
+        /* Brand Colors */
+        --color-brand-orange: #FFA500;
+        --color-brand-orange-light: #FFC04D;
+        --color-brand-green: #8BB42D;
+        --color-brand-green-light: #A2C359;
+        --color-brand-blue: #0273BE;
+        --color-brand-blue: #4E9DD2;
+        --color-brand-fuscia: #E90555;
+        --color-dark-gray: #333;
+        --color-light-gray: ##DEDEDE;
+        --color-app-bg: #F8F9FA;
+    
+        /* Heading Colors */
+        --color-h2: #0273BE;
+        --color-h3: #FFC04D;
+        --color-h4: #8BB42D;
+    
+    }
+
+
+
+/* ========================================================================
+Annielytics Fonts
+======================================================================== */
+
+@font-face {
+    font-family: 'Ek Mukta';
+    src: url('static/fonts/ek-mukta/EkMukta-Light.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ek Mukta';
+    src: url('static/fonts/ek-mukta/EkMukta-Regular.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ek Mukta';
+    src: url('static/fonts/ek-mukta/EkMukta-Medium.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ek Mukta';
+    src: url('static/fonts/ek-mukta/EkMukta-SemiBold.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ek Mukta';
+    src: url('static/fonts/ek-mukta/EkMukta-Bold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+
 /* ======================================================================
    Containers
    ======================================================================= */
@@ -43,7 +159,8 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+    font-family: var(--font-family-main);
     background-color: white;
     min-height: 100vh;
     display: flex;
@@ -52,16 +169,26 @@ body {
     padding: 10px;
 }
 
+/* Fix header height issue */
 .header {
-    /* text-align: center; */
-    margin-bottom: 30px;
+    /* margin-bottom: 30px; */
+    height: auto !important;  /* Override any hardcoded height */
+    min-height: auto !important;  /* Remove any min-height constraints */
+    margin-left: 15px;
 }
 
-.header h1 {
-    color: #666;
-    font-size: 2.5rem;
+h1 {
+    color: var(--color-dark-gray);
+    font-size: 1.8rem;
     font-weight: 400;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
+}
+
+h2 {
+    color: var(--color-brand-orange);
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin: 40px 0 0 15px;
 }
 
 .header p {
@@ -79,6 +206,7 @@ body {
 .footer a {
     color: #FFA500;
     text-decoration: none;
+    margin: 0 10px;
 }
 
 .footer a:hover {
@@ -156,21 +284,28 @@ body {
     border-radius: 8px;
     padding: 1.5rem 2rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: center;
+    text-align: left;
 }
 
 .metric-label {
-    display: block;
-    font-size: 0.9rem;
+    /* display: block; */
+    font-size: 0.8rem;
     color: #666;
     margin-bottom: 0.5rem;
 }
 
 .metric-value {
     display: block;
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 1.8rem;
+    font-weight: 400;
     color: #1a73e8;
+}
+
+/* Adjust metric card layout for labels with icons */
+.metric-card .metric-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Navigation menu styles */
@@ -207,11 +342,11 @@ body {
 
 .training-card {
     background: white;
+    border: solid 1px #DEDEDE;
     border-radius: 8px;
     padding: 2rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     text-align: center;
-    margin: 0 1rem;
 }
 
 .training-card h3 {
@@ -220,7 +355,7 @@ body {
 }
 
 #model-status {
-    font-weight: bold;
+    font-weight: 300;
     margin: 1rem 0;
 }
 
@@ -280,3 +415,81 @@ body {
 .training-message a:hover {
     text-decoration: underline;
 }
+
+
+/* ======================================================================
+   Info Icons
+   ======================================================================= */
+
+/* Executive Summary Section */
+.executive-summary {
+    background: white;
+    padding: 10px;
+    margin: 15px;
+    border-radius: 8px;
+    border: solid 1px #DEDEDE;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Update metrics summary to wrap */
+.metrics-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
+}
+
+/* Info Icon Styles */
+.info-icon {
+    cursor: help !important;
+    position: relative;
+    display: inline-block;
+    vertical-align: super;
+    font-size: 0.9rem;
+    font-family: 'Ek Mukta', sans-serif;
+    font-weight: 200;
+    color: #8BB42D;
+    padding: 0 4px 10px 3px;
+    margin-left: 3px !important;
+    border-radius: 50%;
+}
+
+.info-icon:hover {
+    color: #0273BE;
+}
+
+/* NEW: Fix tooltip positioning to prevent cutoff */
+.info-icon[data-tooltip]:before {
+    content: attr(data-tooltip);
+    white-space: pre-wrap;
+    position: absolute;
+    bottom: 100%;  /* NEW: Position above the icon instead of to the side */
+    left: 50%;     /* NEW: Center horizontally */
+    transform: translateX(-50%) translateY(-10px);  /* NEW: Center and add gap */
+    background: rgba(255, 165, 0, 0.95);
+    color: #444;
+    padding: 10px 14px;
+    border-radius: 10px;
+    width: 320px;  /* NEW: Fixed width for consistency */
+    font-size: 14px;
+    font-weight: normal;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+    z-index: 9999;
+    line-height: 1.4;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* NEW: Adjust position for last 3 metrics to prevent right-edge cutoff */
+.metric-card:nth-last-child(-n+3) .info-icon[data-tooltip]:before {
+    left: auto;
+    right: 0;
+    transform: translateY(-10px);
+}
+
+.info-icon[data-tooltip]:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+

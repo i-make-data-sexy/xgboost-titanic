@@ -11,21 +11,38 @@ import pandas as pd
 import config
 import preprocessing
 import models
+import logging
+
+# Disable Plotly auto-show behavior
+import plotly.io as pio
+pio.renderers.default = None  # Prevents any automatic rendering
+
+
+# ========================================================================
+#   Instantiate Logger
+# ========================================================================
+
+logger = logging.getLogger(__name__)
+
 
 # ========================================================================
 #   Main Training Pipeline
 # ========================================================================
 
-def train_pipeline(tune_hyperparameters=True):
+def train_pipeline(tune_hyperparameters=True, show_plots=True):
     """
     Complete training pipeline from raw data to saved model.
     
     Args:
         tune_hyperparameters (bool): Whether to tune hyperparameters
+        show_plots (bool): Whether to display plots in new windows
         
     Returns:
         dict: Dictionary containing model, metrics, and encoders
     """
+    
+    # Add logging
+    logger.info("Starting train_pipeline function")
     
     print("=" * 60)
     print(" " * 20 + "TITANIC ML PIPELINE")
@@ -95,20 +112,42 @@ def train_pipeline(tune_hyperparameters=True):
     print("\n9. CREATING VISUALIZATIONS")
     print("-" * 40)
     
+    # Add detailed logging
+    logger.info("Creating visualizations - NO show() should be called")
+    
     # Feature importance
+    logger.info("Creating feature importance plot...")  
     fig_importance = models.plot_feature_importance(
         model, 
         X.columns.tolist()
     )
-    fig_importance.show()
+    logger.info("Feature importance plot created successfully")  
     
     # Confusion matrix
+    logger.info("Creating confusion matrix...")  
     fig_cm = models.plot_confusion_matrix(metrics["confusion_matrix"])
-    fig_cm.show()
+    logger.info("Confusion matrix created successfully") 
     
     # ROC curve with optimal threshold point (elbow)
+    logger.info("Creating ROC curve...")  
     fig_roc = models.plot_roc_curve(y_test, metrics["probabilities"])
-    fig_roc.show()
+    logger.info("ROC curve created successfully")  
+    # fig_roc.show()  # Should be commented out
+    
+    # Log completion
+    logger.info("All visualizations created without showing")
+    print("✓ Visualizations created (view at /model_performance)")
+    
+    # Only show plots if requested (not when called from Flask)
+    if show_plots:
+        logger.info("Showing plots in new windows (show_plots=True)")
+        fig_importance.show()
+        fig_cm.show()
+        fig_roc.show()
+    else:
+        logger.info("NOT showing plots (show_plots=False)")
+    
+    print("✓ Visualizations created (view at /model_performance)")
     
     print("\n" + "=" * 60)
     print(" " * 20 + "TRAINING COMPLETE!")
@@ -184,7 +223,7 @@ def test_predictions():
 
 if __name__ == "__main__":
     # Train the model
-    results = train_pipeline(tune_hyperparameters=True)
+    results = train_pipeline(tune_hyperparameters=True, show_plots=True)
     
     # Test predictions
     test_predictions()
