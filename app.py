@@ -136,7 +136,7 @@ def model_performance():
         roc_auc = roc_auc_score(y_test, y_pred_proba)
         cm = confusion_matrix(y_test, y_pred)
         
-        # NEW: Calculate additional metrics
+        # Calculate additional metrics
         precision = precision_score(y_test, y_pred) * 100
         recall = recall_score(y_test, y_pred) * 100
         f1 = f1_score(y_test, y_pred)
@@ -163,7 +163,7 @@ def model_performance():
             accuracy=f"{accuracy:.1f}",
             roc_auc=f"{roc_auc:.3f}",
             cv_score=f"{cv_scores['mean']:.3f} ± {cv_scores['std']:.3f}",
-            # NEW: Pass additional metrics
+            # Pass additional metrics
             precision=f"{precision:.1f}",
             recall=f"{recall:.1f}",
             f1_score=f"{f1:.3f}"

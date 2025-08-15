@@ -306,7 +306,9 @@ def plot_feature_importance(model, feature_names):
     # Format text on bars as percentages
     fig.update_traces(
         texttemplate="%{text:.1f}%",
-        textposition="outside"
+        textposition="outside",
+        hoverinfo='skip',
+        hovertemplate=None,                          # Disable tooltips (hovertemplate) because there's no additional info
     )
     
     max_x = importance_df["Importance"].max()
@@ -328,8 +330,6 @@ def plot_feature_importance(model, feature_names):
         plot_bgcolor="white",
         paper_bgcolor="white"
     )
-    
-    fig.update_xaxes(gridcolor="rgba(200,200,200,0.3)")
     
     # Log status
     logger.info("Returning feature importance figure without showing")
@@ -384,7 +384,7 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
     fig = go.Figure(data=go.Heatmap(
         z=z_for_colors,                           # Use binary matrix for colors
         text=text_display,                        # Use string version of values
-        texttemplate="%{text}",                       # Show the values
+    texttemplate="%{text}",                       # Show the values
         textfont={"size": 14, "color": "white"},  
         x=labels,
         y=labels,
@@ -392,8 +392,8 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
         showscale=False,
         hovertext=hover_text,
         hoverinfo="text",
-        zmin=0,                  # Explicitly set min
-        zmax=1                   # Explicitly set max
+        zmin=0,                                   # Explicitly set min
+        zmax=1                                    # Explicitly set max
     ))
     
     # Calculate accuracy metrics

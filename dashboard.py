@@ -244,7 +244,7 @@ def create_age_survival_chart(df):
     age_survival["Percentage"] = (age_survival["Count"] / age_survival["Total"]) * 100
     
     # Map survived values to readable labels
-    age_survival["Status"] = age_survival["Survived"].map({0: "Died", 1: "Survived"})
+    age_survival["Status"] = age_survival["Survived"].map({0: "Did Not Survive", 1: "Survived"})
     
     # Calculate survival rate for sorting
     survival_rates = (
@@ -270,17 +270,21 @@ def create_age_survival_chart(df):
         text="Percentage",
         color_discrete_map={
             "Survived": config.BRAND_COLORS["blue"],
-            "Died": "#B8D4E8"  # Light blue
+            "Did Not Survive": "#B8D4E8"  # Light blue
         }
     )
     
-    # Customize appearance
-    fig.update_traces(
-        texttemplate="%{text:.0f}%",
-        textposition="inside",
-        hovertemplate="<b>%{x}</b><br>%{customdata}: %{y:.0f}%<extra></extra>",
-        customdata=age_survival["Status"]
-    )
+    # Update traces individually to ensure proper hover data
+    for trace in fig.data:
+        # Get the status from the trace name (which matches the color column)
+        status = trace.name
+        
+        # Update this specific trace with its correct hover template
+        trace.update(
+            texttemplate="%{text:.0f}%",
+            textposition="inside",
+            hovertemplate="<b>%{x}</b><br>" + status + ": %{y:.0f}%<extra></extra>"
+        )
     
     fig.update_layout(
         showlegend=True,
