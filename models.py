@@ -358,12 +358,12 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
     # Create hover text for each cell
     hover_text = np.array([
         [
-            f"<b>True Negatives (TN)</b><br>Correctly predicted death<br><br>Predicted: {labels[0]}<br>Actual: {labels[0]}<br><br>Count: {cm[0,0]}",
+            f"<b>True Negatives (TN)</b><br>Correctly predicted non-survivors<br><br>Predicted: {labels[0]}<br>Actual: {labels[0]}<br><br>Count: {cm[0,0]}",
             f"<b>False Positives (FP)</b><br>Missed non-survivors<br><br>Predicted: {labels[1]}<br>Actual: {labels[0]}<br><br>Count: {cm[0,1]}"
         ],
         [
             f"<b>False Negatives (FN)</b><br>Missed survivors<br><br>Predicted: {labels[0]}<br>Actual: {labels[1]}<br><br>Count: {cm[1,0]}",
-            f"<b>True Positives (TP)</b><br>Correctly predicted survival<br><br>Predicted: {labels[1]}<br>Actual: {labels[1]}<br><br>Count: {cm[1,1]}"
+            f"<b>True Positives (TP)</b><br>Correctly predicted non-survivors<br><br>Predicted: {labels[1]}<br>Actual: {labels[1]}<br><br>Count: {cm[1,1]}"
         ]
     ])
     
@@ -515,106 +515,9 @@ def find_optimal_threshold(y_true, y_scores, method="youden"):
         "method": method
     }
 
-def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
-    """
-    Creates a Plotly ROC curve with optional optimal threshold point.
-    
-    Args:
-        y_true (np.array): True labels
-        y_scores (np.array): Predicted probabilities
-        show_optimal (bool): Whether to show the optimal threshold point
-        
-    Returns:
-        tuple: (figure, optimal_threshold_dict)
-    """
-    
-    from sklearn.metrics import roc_curve, auc
-    
-    # Calculate ROC curve
-    fpr, tpr, _ = roc_curve(y_true, y_scores)
-    roc_auc = auc(fpr, tpr)
-    
-    # Find optimal threshold (the "elbow")
-    optimal = find_optimal_threshold(y_true, y_scores, method="youden")
-    
-    # Create DataFrame for Plotly Express
-    roc_df = pd.DataFrame({
-        "False Positive Rate": fpr,
-        "True Positive Rate": tpr,
-        "Model": f"ROC Curve (AUC = {roc_auc:.3f})"
-    })
-    
-    # Add diagonal reference line
-    diagonal_df = pd.DataFrame({
-        "False Positive Rate": [0, 1],
-        "True Positive Rate": [0, 1],
-        "Model": "Random Classifier"
-    })
-    
-    # Combine DataFrames
-    plot_df = pd.concat([roc_df, diagonal_df])
-    
-    # Create plot
-    fig = px.line(
-        plot_df,
-        x="False Positive Rate",
-        y="True Positive Rate",
-        color="Model",
-        title="ROC Curve",
-        color_discrete_map={
-            f"ROC Curve (AUC = {roc_auc:.3f})": config.BRAND_COLORS["blue"],
-            "Random Classifier": "gray"
-        }
-    )
-    
-    # Add optimal threshold point if requested
-    if show_optimal:
-        fig.add_scatter(
-            x=[optimal["fpr"]],
-            y=[optimal["tpr"]],
-            mode="markers",
-            marker=dict(
-                size=12,
-                color=config.BRAND_COLORS["orange"],
-                symbol="star"
-            ),
-            name=f"Optimal (threshold={optimal['threshold']:.3f})",
-            hovertemplate=(
-                f"<b>Optimal Threshold (Elbow)</b><br>"
-                f"Threshold: {optimal['threshold']:.3f}<br>"
-                f"Sensitivity: {optimal['sensitivity']:.1%}<br>"
-                f"Specificity: {optimal['specificity']:.1%}<br>"
-                f"FPR: {optimal['fpr']:.1%}<br>"
-                f"TPR: {optimal['tpr']:.1%}<br>"
-                "<extra></extra>"
-            )
-        )
-    
-    # Update line styles
-    fig.update_traces(
-        line=dict(width=2),
-        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.3f})")
-    )
-    fig.update_traces(
-        line=dict(width=1, dash="dash"),
-        selector=dict(name="Random Classifier")
-    )
-    
-    # Update layout
-    fig.update_layout(
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        legend=dict(x=0.6, y=0.1),
-        xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
-        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
-    )
-    
-    return fig, optimal
-
 def plot_roc_curve(y_true, y_scores):
     """
-    Creates a Plotly ROC curve with the optimal threshold highlighted.
-    This is a wrapper for plot_roc_curve_with_optimal for backward compatibility.
+    Creates a Plotly ROC curve with the optimal threshold point highlighted.
     
     Args:
         y_true (np.array): True labels
@@ -623,32 +526,12 @@ def plot_roc_curve(y_true, y_scores):
     Returns:
         plotly.graph_objects.Figure: ROC curve with optimal point
     """
+    
+    from sklearn.metrics import roc_curve, auc
     
     # Start logging
     logger.info("plot_roc_curve called - should NOT open new tab")
     
-    # Call the enhanced version and return just the figure
-    fig, _ = plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True)
-    
-    # Log before returning
-    logger.info("Returning ROC curve figure without showing")
-    return fig
-
-def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
-    """
-    Creates a Plotly ROC curve with optional optimal threshold point.
-    
-    Args:
-        y_true (np.array): True labels
-        y_scores (np.array): Predicted probabilities
-        show_optimal (bool): Whether to show the optimal threshold point
-        
-    Returns:
-        tuple: (figure, optimal_threshold_dict)
-    """
-    
-    from sklearn.metrics import roc_curve, auc
-    
     # Calculate ROC curve
     fpr, tpr, _ = roc_curve(y_true, y_scores)
     roc_auc = auc(fpr, tpr)
@@ -686,175 +569,26 @@ def plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True):
         }
     )
     
-    # Add optimal threshold point if requested
-    if show_optimal:
-        fig.add_scatter(
-            x=[optimal["fpr"]],
-            y=[optimal["tpr"]],
-            mode="markers",
-            marker=dict(
-                size=12,
-                color=config.BRAND_COLORS["orange"],
-                symbol="star"
-            ),
-            name=f"Optimal (threshold={optimal['threshold']:.3f})",
-            hovertemplate=(
-                f"<b>Optimal Threshold (Elbow)</b><br>"
-                f"Threshold: {optimal['threshold']:.3f}<br>"
-                f"Sensitivity: {optimal['sensitivity']:.1%}<br>"
-                f"Specificity: {optimal['specificity']:.1%}<br>"
-                f"FPR: {optimal['fpr']:.1%}<br>"
-                f"TPR: {optimal['tpr']:.1%}<br>"
-                "<extra></extra>"
-            )
+    # Add optimal threshold point (always show it - why wouldn't you want optimal?)
+    fig.add_scatter(
+        x=[optimal["fpr"]],
+        y=[optimal["tpr"]],
+        mode="markers",
+        marker=dict(
+            size=12,
+            color=config.BRAND_COLORS["orange"],
+            symbol="star"
+        ),
+        name=f"Optimal (threshold={optimal['threshold']:.3f})",
+        hovertemplate=(
+            f"<b>Optimal Threshold (Elbow)</b><br>"
+            f"Threshold: {optimal['threshold']:.3f}<br>"
+            f"Sensitivity: {optimal['sensitivity']:.1%}<br>"
+            f"Specificity: {optimal['specificity']:.1%}<br>"
+            f"FPR: {optimal['fpr']:.1%}<br>"
+            f"TPR: {optimal['tpr']:.1%}<br>"
+            "<extra></extra>"
         )
-    
-    # Update line styles
-    fig.update_traces(
-        line=dict(width=2),
-        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.3f})")
-    )
-    fig.update_traces(
-        line=dict(width=1, dash="dash"),
-        selector=dict(name="Random Classifier")
-    )
-    
-    # Update layout
-    fig.update_layout(
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        legend=dict(x=0.6, y=0.1),
-        xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
-        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
-    )
-    
-    return fig, optimal
-
-def plot_roc_curve(y_true, y_scores):
-    """
-    Creates a Plotly ROC curve with the optimal threshold highlighted.
-    This is a wrapper for plot_roc_curve_with_optimal for backward compatibility.
-    
-    Args:
-        y_true (np.array): True labels
-        y_scores (np.array): Predicted probabilities
-        
-    Returns:
-        plotly.graph_objects.Figure: ROC curve with optimal point
-    """
-    
-    # Call the enhanced version and return just the figure
-    fig, _ = plot_roc_curve_with_optimal(y_true, y_scores, show_optimal=True)
-    return fig
- 
-def find_optimal_threshold(y_true, y_scores, method="youden"):
-    """
-    Finds the optimal classification threshold using various methods.
-    
-    Args:
-        y_true (np.array): True labels
-        y_scores (np.array): Predicted probabilities
-        method (str): Method to find threshold
-            - "youden": Maximizes Youden's J statistic (TPR - FPR)
-            - "closest": Point closest to top-left corner
-            - "f1": Maximizes F1 score
-        
-    Returns:
-        dict: Optimal threshold and metrics
-    """
-    
-    from sklearn.metrics import roc_curve, f1_score
-    import numpy as np
-    
-    # Calculate ROC curve
-    fpr, tpr, thresholds = roc_curve(y_true, y_scores)
-    
-    if method == "youden":
-        # Youden's J statistic: maximize (sensitivity + specificity - 1)
-        j_scores = tpr - fpr
-        optimal_idx = np.argmax(j_scores)
-        
-    elif method == "closest":
-        # Find point closest to (0,1) - the perfect classifier
-        distances = np.sqrt((fpr - 0)**2 + (tpr - 1)**2)
-        optimal_idx = np.argmin(distances)
-        
-    elif method == "f1":
-        # Find threshold that maximizes F1 score
-        f1_scores = []
-        for threshold in thresholds:
-            y_pred = (y_scores >= threshold).astype(int)
-            f1 = f1_score(y_true, y_pred)
-            f1_scores.append(f1)
-        optimal_idx = np.argmax(f1_scores)
-    
-    else:
-        raise ValueError(f"Unknown method: {method}")
-    
-    # Get optimal values
-    optimal_threshold = thresholds[optimal_idx]
-    optimal_fpr = fpr[optimal_idx]
-    optimal_tpr = tpr[optimal_idx]
-    
-    # Calculate performance at this threshold
-    y_pred_optimal = (y_scores >= optimal_threshold).astype(int)
-    
-    return {
-        "threshold": optimal_threshold,
-        "fpr": optimal_fpr,
-        "tpr": optimal_tpr,
-        "sensitivity": optimal_tpr,  # True Positive Rate
-        "specificity": 1 - optimal_fpr,  # True Negative Rate
-        "accuracy": np.mean(y_true == y_pred_optimal),
-        "method": method
-    }
-
-def plot_roc_curve(y_true, y_scores):
-    """
-    Creates a Plotly ROC curve.
-    
-    Args:
-        y_true (np.array): True labels
-        y_scores (np.array): Predicted probabilities
-        
-    Returns:
-        plotly.graph_objects.Figure: ROC curve
-    """
-    
-    from sklearn.metrics import roc_curve, auc
-    
-    # Calculate ROC curve
-    fpr, tpr, _ = roc_curve(y_true, y_scores)
-    roc_auc = auc(fpr, tpr)
-    
-    # Create DataFrame for Plotly Express
-    roc_df = pd.DataFrame({
-        "False Positive Rate": fpr,
-        "True Positive Rate": tpr,
-        "Model": f"ROC Curve (AUC = {roc_auc:.3f})"
-    })
-    
-    # Add diagonal reference line data
-    diagonal_df = pd.DataFrame({
-        "False Positive Rate": [0, 1],
-        "True Positive Rate": [0, 1],
-        "Model": "Random Classifier"
-    })
-    
-    # Combine both DataFrames
-    plot_df = pd.concat([roc_df, diagonal_df])
-    
-    # Create plot using Plotly Express
-    fig = px.line(
-        plot_df,
-        x="False Positive Rate",
-        y="True Positive Rate",
-        color="Model",
-        title="ROC Curve",
-        color_discrete_map={
-            f"ROC Curve (AUC = {roc_auc:.3f})": config.BRAND_COLORS["blue"],
-            "Random Classifier": "gray"
-        }
     )
     
     # Update line styles
@@ -876,8 +610,10 @@ def plot_roc_curve(y_true, y_scores):
         yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
     )
     
+    # Log before returning
+    logger.info("Returning ROC curve figure without showing")
+    
     return fig
-
 
 # ========================================================================
 #   Model Persistence
