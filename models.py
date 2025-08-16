@@ -566,7 +566,7 @@ def plot_roc_curve(y_true, y_scores):
         color_discrete_map={
             f"ROC Curve (AUC = {roc_auc:.2f})": config.BRAND_COLORS["blue"],
             "Random Classifier": "gray"
-        }
+        },
     )
     
     # Add optimal threshold point with a star
@@ -616,10 +616,10 @@ def plot_roc_curve(y_true, y_scores):
             "(False Positive Rate).</i><br>"
             "<br>"
             f"<i>An Area Under the Curve (AUC) score of {roc_auc:.2f}<br>"
-            f"means this model is {'excellent' if roc_auc > 0.9 else 'good' if roc_auc > 0.8 else 'decent' if roc_auc > 0.7 else 'moderate'} at distinguishing <br>"
+            f"means this model is {'excellent' if roc_auc > 0.9 else 'good' if roc_auc > 0.8 else 'acceptable' if roc_auc > 0.7 else 'moderate'} at distinguishing <br>"
             f"between survivors and non-survivors. <br>" 
             f"(Perfect = 1, Random = 0.5, Excellent > 0.9, <br>"
-            f"Good > 0.8, Decent > 0.7)</i><br>"                                                  # AUC explanation
+            f"Good > 0.8, Acceptable > 0.7)</i><br>"                                                  # AUC explanation
             "<extra></extra>"                                                                     # Interpretation ends  
         )
     )
