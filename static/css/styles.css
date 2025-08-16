@@ -214,17 +214,17 @@ h2 {
     margin: 0;
 }
 
+.header-nav h2 {
+    margin: 0 0 0 15px;             /* Remove default margins to line up the link on the model perf page*/
+    line-height: 1;                 /* Tighten line height for better alignment with link */
+}
+
 
 /* ================================================
     Model Performance Page Link
    ================================================ */
 
 /* I need these custom styles for the MP page because I moved the link to the main dashboard to line up with the h2 */
-
-.header-nav h2 {
-    margin: 0 0 0 15px;             /* Remove default margins to line up the link on the model perf page*/
-    line-height: 1;                 /* Tighten line height for better alignment */
-}
 
 .header-nav .link {
     line-height: 1;                 /* Match the h2 line height */
@@ -243,7 +243,7 @@ h2 {
 
 .header p {
     color: #666;
-    font-size: 1.1rem;
+    font-size: 16px;
 }
 
 
@@ -252,7 +252,7 @@ h2 {
    ================================================ */
 
 p a {
-    font-size: 1em;
+    font-size: 16px;
     color: var(--link-color);
     text-decoration: none;
     transition: color 0.3s ease, transform 0.2s ease;
