@@ -13,41 +13,7 @@
     
         /* Paragraph Size */
         --font-size-p: 20px;
-    
-        /* Font Weights */
-        --font-weight-normal: 200;
-        --font-weight-bold: 400;
-        --font-weight-bolder: 600;
-    
-        /* Heading Sizes: Large */
-        --h1-size-lg: 48px;
-        --h2-size-lg: 40px;
-        --h3-size-lg: 30px;
-        --h4-size-lg: 27px;
-        --h5-size-lg: 23px;
-        
-        /* Heading Sizes: Medium */
-        --h1-size-md: 45px;
-        --h2-size-md: 37px;
-        --h3-size-md: 27px;
-        --h4-size-md: 25px;
-        
-        /* Heading Sizes: Small */
-        --h1-size-sm: 42px;
-        --h2-size-sm: 34px;
-        --h3-size-sm: 24px;
-        --h4-size-sm: 21px;
-    
-        /* Heading Sizes: Very Small */
-        --h1-size-sm: 39px;
-        --h2-size-sm: 31px;
-        --h3-size-sm: 21px;
-    
-        /* Line Height */
-        --line-height-tight: 1.25;
-        --line-height-normal: 1.5;
-        --line-height-loose: 1.75;
-    
+
     
     /* ===============================
         Colors
@@ -71,10 +37,13 @@
         --color-h4: #8BB42D;
 
 
+    /* ===============================
+        Links
+        ============================== */
+
         --link-color: #FFA500;
         --link-hover: #0273BE;
         --link-visited: #4E9DD2;
-    
     }
 
 
@@ -394,8 +363,12 @@ p a:hover {
 
 
 /* ======================================================================
-   Button to Trigger Model Training
+    Model Training
    ======================================================================= */
+
+/* ================================================
+   Section
+   ================================================ */
 
 /* Model training section styles */
 .model-training-section {
@@ -407,24 +380,10 @@ p a:hover {
     align-items: center;                /* Centers items along the cross axis (vertical by default) */
 }
 
-.training-card {
-    background: white;
-    border: solid 1px #DEDEDE;
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    text-align: center;
-}
 
-.training-card h3 {
-    margin-top: 0;
-    color: #333;
-}
-
-#model-status {
-    font-weight: 300;
-    margin: 1rem 0;
-}
+/* ================================================
+   Button
+   ================================================ */
 
 .train-button {
     background: var(--color-brand-orange);
@@ -465,22 +424,29 @@ p a:hover {
     cursor: not-allowed;
 }
 
-.spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid #ffffff;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+
+/* ================================================
+   Model Status
+   ================================================ */
+
+#model-status {
+    font-weight: 300;
+    margin: 1rem 0;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* Model status styling */
+.model-status-warning {
+    color: var(--color-brand-orange);  /* Uses your brand orange #FFA500 */
+    font-weight: 500;
 }
 
-.hidden {
-    display: none !important;
+/* You could also add other status states */
+.model-status-success {
+    color: var(--color-brand-green);   /* Uses your brand green #8BB42D */
+}
+
+.model-status-error {
+    color: var(--color-brand-fuscia);  /* Uses your brand fuchsia #E90555 */
 }
 
 /* Training message styles - ensure it appears below button, not as tooltip */
@@ -506,6 +472,27 @@ p a:hover {
 }
 
 
+/* ================================================
+   Spinner
+   ================================================ */
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none !important;
+}
 
 
 /* ======================================================================

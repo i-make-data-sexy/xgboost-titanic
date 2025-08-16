@@ -112,3 +112,101 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPlot('roc-chart', 'roc-chart-data');
   }
 });
+
+
+/* ======================================================================
+   Model Training Functionality
+   ======================================================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Check which charts exist on the current page and render them
+  
+  // Survival Analysis Dashboard charts
+  if (document.getElementById('class-chart')) {
+    renderPlot('class-chart', 'class-chart-data');
+    renderPlot('gender-chart', 'gender-chart-data');
+    renderPlot('age-chart', 'age-chart-data');
+    renderPlot('family-chart', 'family-chart-data');
+  }
+  
+  // Model Performance Dashboard charts
+  if (document.getElementById('importance-chart')) {
+    renderPlot('importance-chart', 'importance-chart-data');
+    renderPlot('confusion-chart', 'confusion-chart-data');
+    renderPlot('roc-chart', 'roc-chart-data');
+  }
+  
+  // Training functionality (only on main dashboard)
+  if (document.getElementById('train-model-btn')) {
+    
+    // Check model status on page load
+    fetch('/model-info')
+      .then(response => {
+        const btnText = document.getElementById('btn-text');
+        if (response.ok) {
+          btnText.textContent = 'Retrain Model';
+        } else {
+          // Note: model-status element doesn't exist, but keeping for compatibility
+          const modelStatus = document.getElementById('model-status');
+          if (modelStatus) {
+            modelStatus.textContent = '⚠ No model found';
+            modelStatus.className = 'model-status-warning'; 
+          }
+          btnText.textContent = 'Train Initial Model';
+        }
+      });
+    
+    // Handle model training
+    document.getElementById('train-model-btn').addEventListener('click', async function() {
+      const btn = this;
+      const btnText = document.getElementById('btn-text');
+      const spinner = document.getElementById('btn-spinner');
+      const message = document.getElementById('training-message');
+      
+      // Disable button and show spinner
+      btn.disabled = true;
+      btnText.textContent = 'Training...';
+      spinner.classList.remove('hidden');
+      message.textContent = 'Model in training 🏋️‍♂️';
+      message.className = 'training-message training-in-progress';
+      
+      try {
+        const response = await fetch('/retrain', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tune_hyperparameters: true
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          // Success
+          message.innerHTML = `
+            ✓ Model trained successfully!<br>
+            Accuracy: ${result.metrics.accuracy}%<br>
+            <a href="/model-performance" class="link">View Performance Metrics</a>
+          `;
+          message.className = 'training-message training-success';
+          btnText.textContent = 'Retrain Model';
+        } else {
+          // Error
+          message.textContent = `Error: ${result.error}`;
+          message.className = 'training-message training-error';
+          btnText.textContent = 'Try Again';
+        }
+      } catch (error) {
+        message.textContent = `Error: ${error.message}`;
+        message.className = 'training-message training-error';
+        btnText.textContent = 'Try Again';
+      } finally {
+        // Re-enable button and hide spinner
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
+  }
+});
