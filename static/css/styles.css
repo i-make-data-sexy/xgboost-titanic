@@ -426,7 +426,7 @@ p a:hover {
 
 
 /* ================================================
-   Model Status
+   Model Training Status
    ================================================ */
 
 #model-status {
@@ -437,7 +437,6 @@ p a:hover {
 /* Model status styling */
 .model-status-warning {
     color: var(--color-brand-orange);  /* Uses your brand orange #FFA500 */
-    font-weight: 500;
 }
 
 /* You could also add other status states */
@@ -471,6 +470,18 @@ p a:hover {
     display: none !important;
 }
 
+/* Training message state colors */
+.training-message.training-in-progress {
+    color: #0273BE !important;  /* Add !important temporarily to test */
+}
+
+.training-message.training-success {
+    color: #8BB42D !important;
+}
+
+.training-message.training-error {
+    color: #E90555 !important;
+}
 
 /* ================================================
    Spinner

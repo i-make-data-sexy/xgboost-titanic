@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnText.textContent = 'Training...';
       spinner.classList.remove('hidden');
       message.textContent = 'Model in training 🏋️‍♂️';
-      message.className = 'training-message training-in-progress';
+      message.className = 'training-message training-in-progress';  // Keep both classes
       
       try {
         const response = await fetch('/retrain', {
@@ -190,17 +190,17 @@ document.addEventListener('DOMContentLoaded', () => {
             Accuracy: ${result.metrics.accuracy}%<br>
             <a href="/model-performance" class="link">View Performance Metrics</a>
           `;
-          message.className = 'training-message training-success';
+          message.className = 'training-message training-success';  // Keep both classes
           btnText.textContent = 'Retrain Model';
         } else {
           // Error
           message.textContent = `Error: ${result.error}`;
-          message.className = 'training-message training-error';
+          message.className = 'training-message training-error';  // Keep both classes
           btnText.textContent = 'Try Again';
         }
       } catch (error) {
         message.textContent = `Error: ${error.message}`;
-        message.className = 'training-message training-error';
+        message.className = 'training-message training-error';  // Keep both classes
         btnText.textContent = 'Try Again';
       } finally {
         // Re-enable button and hide spinner
