@@ -75,8 +75,10 @@ def create_class_survival_chart(df):
     
     # Customize appearance
     fig.update_traces(
-        textposition="outside",
-        hovertemplate="<b>%{y} Class</b><br>Survivors: %{x}<extra></extra>"
+        textposition="outside",                 
+        hoverinfo='skip',                   # Disabled hovertemplate b/c no new info
+        hovertemplate=None,                 # Disabled hovertemplate b/c no new info
+                              
     )
     
     fig.update_yaxes(type="category", autorange="reversed")
@@ -145,7 +147,9 @@ def create_gender_survival_donut(df):
         textfont_size=14,
         textfont_color="white",
         marker=dict(line=dict(color="white", width=2)),
-        hovertemplate="<b>%{label}</b><br>Survival Rate: %{value:.1f}%<extra></extra>"
+        hoverinfo='skip',                               # Disabled hovertemplate b/c no new info
+        hovertemplate=None                              # Disabled hovertemplate b/c no new info
+
     )
     
     fig.update_layout(
@@ -274,17 +278,12 @@ def create_age_survival_chart(df):
         }
     )
     
-    # Update traces individually to ensure proper hover data
-    for trace in fig.data:
-        # Get the status from the trace name (which matches the color column)
-        status = trace.name
-        
-        # Update this specific trace with its correct hover template
-        trace.update(
-            texttemplate="%{text:.0f}%",
-            textposition="inside",
-            hovertemplate="<b>%{x}</b><br>" + status + ": %{y:.0f}%<extra></extra>"
-        )
+    fig.update_traces(
+        texttemplate="%{text:.0f}%",
+        textposition="inside",
+        hoverinfo='skip',                               # Disabled hovertemplate b/c no new info
+        hovertemplate=None                              # Disabled hovertemplate b/c no new info
+    )
     
     fig.update_layout(
         showlegend=True,
