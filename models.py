@@ -569,7 +569,7 @@ def plot_roc_curve(y_true, y_scores):
         }
     )
     
-    # Add optimal threshold point (always show it - why wouldn't you want optimal?)
+    # Add optimal threshold point with a star
     fig.add_scatter(
         x=[optimal["fpr"]],
         y=[optimal["tpr"]],
@@ -585,8 +585,8 @@ def plot_roc_curve(y_true, y_scores):
             f"Threshold: {optimal['threshold']:.3f}<br>"
             f"Sensitivity: {optimal['sensitivity']:.1%}<br>"
             f"Specificity: {optimal['specificity']:.1%}<br>"
-            f"FPR: {optimal['fpr']:.1%}<br>"
-            f"TPR: {optimal['tpr']:.1%}<br>"
+            f"False Positive Rate: {optimal['fpr']:.1%}<br>"
+            f"True Positive Rate: {optimal['tpr']:.1%}<br>"
             "<extra></extra>"
         )
     )
