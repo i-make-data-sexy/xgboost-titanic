@@ -1,15 +1,21 @@
-# Titanic Survival Analysis Dashboard & XGBoost Predictor
+# XGBoost Prediction Model for the Titanic Dataset
 
 A Flask-based interactive dashboard visualizing survival patterns from the Titanic dataset using Plotly Express, with XGBoost machine learning for predictive analysis.
 
 ## Features
 
 ### Visualizations
-- **Four Interactive Dashboard Charts:**
+- **Titanic Survival Analysis Dashboard:**
   - Bar chart showing survivor counts by passenger class
   - Donut chart displaying survival rates by gender
   - Bar chart presenting survival rates by age group
   - Line chart illustrating survival rates by family size
+- **Model Performance Dashboard:**
+  - Executive Summary cards with high-level model-perfomance metrics
+  - Bar chart showing feature performance scores (gender is best predictor of survival) 
+  - Matrix showing correct and incorrect predictions vis-a-vis actual data
+  - Line chart showing the ROC curve to demonstrate the optimal threshold the model selected
+ 
 
 ### Machine Learning
 - **XGBoost Predictive Model:**
@@ -23,7 +29,7 @@ A Flask-based interactive dashboard visualizing survival patterns from the Titan
 ### Design
 - **Modern Interface:**
   - Clean, responsive layout with CSS Grid
-  - Custom brand colors (#FFA500, #8BB42D, #0273BE, #E90555)
+  - Annielytics brand colors ( #FFA500, #8BB42D, #0273BE, #E90555)
   - Interactive Plotly charts with hover effects
   - Professional styling with shadows and rounded corners
 
@@ -61,18 +67,6 @@ A Flask-based interactive dashboard visualizing survival patterns from the Titan
    ```bash
    pip install -r requirements.txt
    ```
-
-   #### Mac-Specific Requirements
-
-Note: Mac users need to install OpenMP before using XGBoost:
-
-```bash
-# Install OpenMP runtime
-brew install libomp
-
-# If you don't have Homebrew, install it first:
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
 
 5. **Ensure your data file is in place:**
    - Place `titanic.csv` in the `data/raw/` directory
@@ -117,7 +111,7 @@ Creating family features...
 
 ```bash
 # Start the Flask server
-python app.py
+flask run
 ```
 
 **Expected output:**
@@ -146,7 +140,7 @@ You'll see four interactive charts:
 python train.py  # Takes ~30 seconds
 
 # Terminal 2 (after training completes)
-python app.py
+flask run
 
 # Browser
 # Go to http://localhost:5000
@@ -232,31 +226,41 @@ python train.py
 ```
 
 ## Project Structure
+If you update the structure, you can run the `app_structure.py` script to update the structure.
 
 ```
 XGBoost/
-├── data/
-│   ├── models/              # Saved trained models (.pkl files)
-│   ├── processed/           # Processed/cleaned datasets
-│   └── raw/                 # Original untouched data
+├── data
+│   ├── models
+│   │   ├── encoders.pkl
+│   │   └── xgboost_model_v1.0.pkl
+│   ├── processed
+│   │   └── titanic_processed.csv
+│   └── raw
 │       └── titanic.csv
-├── static/
-│   ├── css/
-│   │   └── styles.css       # Dashboard styling
-│   ├── img/
-│   │   └── favicon.png      # Site favicon (defaults to Annielytics)
-│   └── js/
-│       └── dashboard.js     # Chart rendering logic
-├── templates/
-│   └── index.html           # Dashboard HTML template
-├── app.py                   # Flask application (routes & endpoints)
-├── app_structure.py         # Utility to display project structure
-├── config.py                # Central configuration & settings
-├── dashboard.py             # Dashboard chart creation functions
-├── models.py                # ML model training & prediction
-├── preprocessing.py         # Data cleaning & feature engineering
-├── train.py                 # Main training orchestration script
-└── README.md                # This file
+├── static
+│   ├── css
+│   │   └── styles.css
+│   ├── fonts
+│   │   └── ek-mukta
+│   ├── img
+│   │   └── favicon.png
+│   └── js
+│       └── dashboard.js
+├── templates
+│   ├── 404.html
+│   ├── base.html
+│   ├── index.html
+│   └── model-performance.html
+├── README.md
+├── app.py
+├── app_structure.py
+├── config.py
+├── index_dashboard.py
+├── models_dashboard.py
+├── preprocessing.py
+├── requirements.txt
+└── train.py
 ```
 
 ## Technical Implementation
@@ -269,12 +273,13 @@ XGBoost/
    - Label encoding for categorical variables
    - Age and fare binning for better patterns
 
-2. **Model Training (`models.py`):**
+2. **Model Training (`models_dashboard.py`):**
    - Basic XGBoost baseline model
    - Hyperparameter tuning with GridSearchCV
    - 5-fold cross-validation
    - Model persistence with joblib
    - Comprehensive evaluation metrics
+   - Plotly visualizations
 
 3. **Configuration (`config.py`):**
    - Centralized settings for paths and parameters
@@ -284,7 +289,7 @@ XGBoost/
 
 ### Dashboard Components
 
-1. **Flask Backend (`app.py` & `dashboard.py`):**
+1. **Flask Backend (`app.py` & `index_dashboard.py`):**
    - Loads and processes Titanic dataset
    - Creates four Plotly Express visualizations
    - Handles JSON serialization for frontend consumption
@@ -388,12 +393,14 @@ The XGBoost model typically achieves:
 - **Cross-validation score:** ~0.85 (±0.03)
 
 Key predictive features (by importance):
-1. Passenger class
-2. Sex
-3. Fare
-4. Age
-5. Family size
-
+1. Sex (~49%) - Gender is by far the most important predictor
+2. Passenger class (~14%) - Socioeconomic status matters significantly
+3. HasCabin (~12%) - Whether cabin information exists (proxy for class/deck)
+4. Family size (~5%) - Number of family members aboard
+5. Embarked (~3%) - Port of embarkation
+6. Age (~3%) - Passenger age
+7. Fare (~3%) - Ticket price
+8. FareBin (~3%) - Fare categories
 ## Customization
 
 ### Brand Colors
@@ -437,16 +444,59 @@ The analysis reveals several key patterns from the Titanic disaster:
 ## Requirements
 
 ```txt
-pandas==2.0.3
-numpy==1.24.3
-scikit-learn==1.3.0
-xgboost==1.7.6
-plotly==5.15.0
-Flask==2.3.2
-joblib==1.3.1
+altair==5.4.0
+attrs==24.2.0
+blinker==1.9.0
+cachetools==5.5.0
+certifi==2024.7.4
+charset-normalizer==3.3.2
+click==8.1.7
+Flask==3.1.1
+gitdb==4.0.11
+GitPython==3.1.43
+idna==3.7
+itsdangerous==2.2.0
+Jinja2==3.1.4
+joblib==1.4.2
+jsonschema==4.23.0
+jsonschema-specifications==2023.12.1
+markdown-it-py==3.0.0
+MarkupSafe==2.1.5
+mdurl==0.1.2
+mpmath==1.3.0
+narwhals==1.5.2
+nltk==3.9.1
+numpy==2.1.0
+packaging==24.1
+pandas==2.2.2
+pillow==10.4.0
+protobuf==5.27.3
+pyarrow==17.0.0
+pydeck==0.9.1
+Pygments==2.18.0
+python-dateutil==2.9.0.post0
+pytz==2024.1
+referencing==0.35.1
+regex==2024.7.24
+requests==2.32.3
+rich==13.7.1
+rpds-py==0.20.0
+six==1.16.0
+smmap==5.0.1
+streamlit==1.37.1
+sympy==1.14.0
+tenacity==8.5.0
+toml==0.10.2
+tornado==6.4.1
+tqdm==4.66.5
+typing_extensions==4.12.2
+tzdata==2024.1
+urllib3==2.2.2
+Werkzeug==3.1.3
+xxhash==3.5.0
 ```
 
-## Future Enhancements
+## Possible Future Enhancements
 
 - [ ] Add real-time prediction interface
 - [ ] Implement model versioning and A/B testing
