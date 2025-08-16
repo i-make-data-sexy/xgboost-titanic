@@ -19,15 +19,11 @@
 
     {# Model training section #}
     <div class="model-training-section">
-        <div class="training-card">
-            <h3>Model Status</h3>
-            <p id="model-status">Checking model...</p>
-            <button id="train-model-btn" class="train-button">
-                <span id="btn-text">Train New Model</span>
-                <span id="btn-spinner" class="spinner hidden"></span>
-            </button>
-            <p id="training-message" class="training-message"></p>
-        </div>
+        <button id="train-model-btn" class="train-button">
+            <span id="btn-text">Train New Model</span>
+            <span id="btn-spinner" class="spinner hidden"></span>
+        </button>
+        <p id="training-message" class="training-message"></p>
     </div>
 
     {# Hidden JSON data for JavaScript to consume #}
@@ -50,8 +46,8 @@
         fetch('/model-info')
             .then(response => {
                 if (response.ok) {
-                    document.getElementById('model-status').textContent = '✓ Trained and ready';
-                    document.getElementById('model-status').style.color = '#8BB42D';
+                    // document.getElementById('model-status').textContent = '✓ Trained and ready';
+                    // document.getElementById('model-status').style.color = '#8BB42D';
                     document.getElementById('btn-text').textContent = 'Retrain Model';
                 } else {
                     document.getElementById('model-status').textContent = '⚠ No model found';
@@ -94,11 +90,11 @@
                         Accuracy: ${result.metrics.accuracy}%<br>
                         <a href="/model_performance">View Performance Metrics →</a>
                     `;
-                    message.style.color = 'green';
+                    message.style.color = '#8BB42D';
                     
                     // Update status
-                    document.getElementById('model-status').textContent = '✓ Model trained and ready';
-                    document.getElementById('model-status').style.color = 'green';
+                    // document.getElementById('model-status').textContent = '✓ Model trained and ready';
+                    // document.getElementById('model-status').style.color = 'green';
                     btnText.textContent = 'Retrain Model';
                 } else {
                     // Error
