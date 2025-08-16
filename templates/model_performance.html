@@ -5,11 +5,19 @@
 {% block title %}Titanic Model Performance Dashboard{% endblock %}
 
 {# Set the header text #}
-{% block header %}Titanic Model Performance Dashboard{% endblock %}
+{% block header %}
+    <div class="header-nav">
+        <h1>Titanic Model Performance Dashboard</h1>
+    </div>
+{% endblock %}
 
 {# Main content - model evaluation charts #}
 {% block content %}
-    <h2>Executive Summary</h2>
+    <div class=header-nav>
+        <h2>Executive Summary</h2>
+        <p><a href="/">View the Titanic Survival Analysis dashboard</a></p>
+    </div>
+    
     {# Executive Summary at the top #}
     <div class="executive-summary">
         <div class="metrics-summary">

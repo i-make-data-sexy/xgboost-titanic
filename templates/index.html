@@ -5,7 +5,12 @@
 {% block title %}Titanic Survival Analysis Dashboard{% endblock %}
 
 {# Set the header text #}
-{% block header %}Titanic Survival Analysis{% endblock %}
+{% block header %}
+    <div class="header-nav">
+        <h1>Titanic Survival Analysis</h1>
+        <p><a href="/model_performance">View the Model Performance dashboard</a></p>
+    </div>
+{% endblock %}s
 
 {# Main content - the 4 charts grid #}
 {% block content %}

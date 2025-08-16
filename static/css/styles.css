@@ -69,6 +69,11 @@
         --color-h2: #0273BE;
         --color-h3: #FFC04D;
         --color-h4: #8BB42D;
+
+
+        --link-color: #FFA500;
+        --link-hover: #0273BE;
+        --link-visited: #4E9DD2;
     
     }
 
@@ -135,13 +140,13 @@ Annielytics Fonts
     padding: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 350px;
-    overflow: hidden;                                   /* Prevent overflow */
+overflow: hidden;                   /* Prevent overflow */
     position: relative;
 }
 
 /* Ensure charts are responsive */
 .chart-container > div {
-    width: 100% !important;                             /* Contain the Plotly chart within bounds */
+    width: 100% !important;         /* Contain the Plotly chart within bounds */
     height: 100% !important;
     max-width: 100%;
     position: relative;
@@ -149,8 +154,12 @@ Annielytics Fonts
 
 
 /* ======================================================================
-   General Styles
+   Global Styles
    ======================================================================= */
+
+/* ================================================
+    General
+   ================================================ */
 
 * {
     margin: 0;
@@ -159,7 +168,6 @@ Annielytics Fonts
 }
 
 body {
-    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
     font-family: var(--font-family-main);
     background-color: white;
     min-height: 100vh;
@@ -167,14 +175,6 @@ body {
     justify-content: center;
     align-items: center;
     padding: 10px;
-}
-
-/* Fix header height issue */
-.header {
-    /* margin-bottom: 30px; */
-    height: auto !important;  /* Override any hardcoded height */
-    min-height: auto !important;  /* Remove any min-height constraints */
-    margin-left: 15px;
 }
 
 h1 {
@@ -191,10 +191,84 @@ h2 {
     margin: 40px 0 0 15px;
 }
 
+
+/* ================================================
+   Header
+   ================================================ */
+
+/* Fix header height issue */
+.header {
+    height: auto !important;        /* Override any hardcoded height */
+    min-height: auto !important;    /* Remove any min-height constraints */
+    margin-left: 15px;
+}
+
+/* Header navigation layout */
+.header-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.header-nav h1 {
+    margin: 0;
+}
+
+
+/* ================================================
+    Model Performance Page Link
+   ================================================ */
+
+/* I need these custom styles for the MP page because I moved the link to the main dashboard to line up with the h2 */
+
+.header-nav h2 {
+    margin: 0 0 0 15px;             /* Remove default margins to line up the link on the model perf page*/
+    line-height: 1;                 /* Tighten line height for better alignment */
+}
+
+.header-nav .link {
+    line-height: 1;                 /* Match the h2 line height */
+    align-self: flex-end;           /* Ensure it aligns to bottom */
+    padding-bottom: 0;              /* Remove any bottom padding */
+    margin-bottom: 0;               /* Remove any bottom margin */
+}
+
+/* Ensure the container properly aligns items */
+.header-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;          /* Changed from flex-end to baseline */
+    margin-bottom: 20px;
+}
+
 .header p {
     color: #666;
     font-size: 1.1rem;
 }
+
+
+/* ================================================
+    Index Page Link
+   ================================================ */
+
+p a {
+    font-size: 1em;
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+    white-space: nowrap;
+    margin-right: 15px;
+}
+
+p a:hover {
+    color: var(--color-brand-blue);
+    text-decoration: underline;
+}
+
+
+/* ================================================
+    Footer 
+   ================================================ */
 
 .footer {
     text-align: center;
@@ -215,23 +289,15 @@ h2 {
     text-decoration: underline;
 }
 
-.link a {
-    color: var(--color-brand-orange);
-    text-decoration: none;
-    margin: 0 10px;
-    transition: color 0.3s ease, transform 0.2s ease;
-    
-}
-
-.link a:hover {
-    color: var(--color-brand-blue);
-    text-decoration: underline;
-}
 
 
 /* ======================================================================
    Charts
    ======================================================================= */
+
+/* ================================================
+    Index Page 
+   ================================================ */
 
 #plotly-div {
     width: 100%;
@@ -257,10 +323,10 @@ h2 {
     overflow: hidden;
 }
 
+/* ================================================
+    Model Performance Page 
+   ================================================ */
 
-/* ======================================================================
-   Charts
-   ======================================================================= */
 
 /* Model performance page specific styles */
 .model-charts-grid {
@@ -285,7 +351,10 @@ h2 {
     margin: 0 auto;
 }
 
-/* Metrics summary cards */
+/* ==============================
+    Exec Summary Cards
+   ============================== */
+
 .metrics-summary {
     display: flex;
     justify-content: center;
@@ -323,25 +392,6 @@ h2 {
     justify-content: center;
 }
 
-/* Navigation menu styles */
-.nav-menu {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-}
-
-.nav-link {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
 
 
 /* ======================================================================
@@ -357,7 +407,6 @@ h2 {
     justify-content: center;            /* Centers items along the main axis (horizontal by default) */
     align-items: center;                /* Centers items along the cross axis (vertical by default) */
 }
-
 
 .training-card {
     background: white;
@@ -441,8 +490,6 @@ h2 {
     text-align: center;
     font-size: 14px;
     line-height: 1.6;
-    
-    /* Remove any absolute positioning that might create a tooltip effect */
     position: static !important;
     display: block;
 }
@@ -521,14 +568,14 @@ h2 {
     content: attr(data-tooltip);
     white-space: pre-wrap;
     position: absolute;
-    bottom: 100%;  /* Position above the icon instead of to the side */
-    left: 50%;     /* Center horizontally */
+    bottom: 100%;                                   /* Position above the icon instead of to the side */
+    left: 50%;                                      /* Center horizontally */
     transform: translateX(-50%) translateY(-10px);  /* Center and add gap */
     background: rgba(255, 165, 0, 0.95);
     color: #444;
     padding: 10px 14px;
     border-radius: 10px;
-    width: 320px;  /* Fixed width for consistency */
+    width: 320px;                                   /* Fixed width for consistency */
     font-size: 14px;
     font-weight: normal;
     opacity: 0;
