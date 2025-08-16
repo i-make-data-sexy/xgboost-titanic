@@ -185,7 +185,7 @@ h1 {
 }
 
 h2 {
-    color: var(--color-brand-orange);
+    color: var(--color-brand-green);
     font-size: 1.5rem;
     font-weight: 300;
     margin: 40px 0 0 15px;
@@ -274,7 +274,6 @@ p a:hover {
     text-align: center;
     margin-top: 30px;
     color: #666;
-    font-size: 0.9rem;
 }
 
 .footer a {
@@ -487,28 +486,17 @@ p a:hover {
 /* Training message styles - ensure it appears below button, not as tooltip */
 .training-message {
     margin-top: 1rem;
-    text-align: center;
-    font-size: 14px;
-    line-height: 1.6;
-    position: static !important;
-    display: block;
-}
-
-.training-message {
-    display: block;
-    position: static !important;    /* Remove any absolute positioning that might create a tooltip effect */
-    width: 100%;                    /* Takes full width so it stays below the button */
-    max-width: 400px;               /* Limit width for readability */
-    margin-top: 1rem;
-    text-align: center;
-    font-size: 14px;
-    line-height: 1.6;
 }
 
 .training-message a {
-    color: #1a73e8;
+    color: var(--link-color);
     text-decoration: none;
-    font-weight: bold;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.training-message a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
 }
 
 /* Hide any tooltip-style elements */
@@ -517,9 +505,7 @@ p a:hover {
     display: none !important;
 }
 
-.training-message a:hover {
-    text-decoration: underline;
-}
+
 
 
 /* ======================================================================

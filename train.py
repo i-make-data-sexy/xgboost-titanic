@@ -10,7 +10,7 @@ Run this to train and save your model.
 import pandas as pd
 import config
 import preprocessing
-import models
+import models_dashboard
 import logging
 
 # Disable Plotly auto-show behavior
@@ -73,7 +73,7 @@ def train_pipeline(tune_hyperparameters=True, show_plots=True):
     # Split data
     print("\n4. SPLITTING DATA")
     print("-" * 40)
-    X_train, X_test, y_train, y_test = models.split_data(X, y)
+    X_train, X_test, y_train, y_test = models_dashboard.split_data(X, y)
     
     # Train model
     print("\n5. TRAINING MODEL")
@@ -81,26 +81,26 @@ def train_pipeline(tune_hyperparameters=True, show_plots=True):
     
     if tune_hyperparameters:
         # Train with hyperparameter tuning
-        model = models.tune_hyperparameters(X_train, y_train)
+        model = models_dashboard.tune_hyperparameters(X_train, y_train)
     else:
         # Train basic model
-        model = models.train_basic_model(X_train, y_train, X_test, y_test)
+        model = models_dashboard.train_basic_model(X_train, y_train, X_test, y_test)
     
     # Evaluate model
     print("\n6. EVALUATING MODEL")
     print("-" * 40)
-    metrics = models.evaluate_model(model, X_test, y_test)
+    metrics = models_dashboard.evaluate_model(model, X_test, y_test)
     
     # Cross-validation
     print("\n7. CROSS-VALIDATION")
     print("-" * 40)
-    cv_scores = models.cross_validate_model(model, X, y)
+    cv_scores = models_dashboard.cross_validate_model(model, X, y)
     print(f"✓ CV AUC: {cv_scores['mean']:.4f} (+/- {cv_scores['std']:.4f})")
     
     # Save model
     print("\n8. SAVING MODEL")
     print("-" * 40)
-    model_path = models.save_model(model)
+    model_path = models_dashboard.save_model(model)
     
     # Save encoders
     import joblib
@@ -117,7 +117,7 @@ def train_pipeline(tune_hyperparameters=True, show_plots=True):
     
     # Feature importance
     logger.info("Creating feature importance plot...")  
-    fig_importance = models.plot_feature_importance(
+    fig_importance = models_dashboard.plot_feature_importance(
         model, 
         X.columns.tolist()
     )
@@ -125,18 +125,18 @@ def train_pipeline(tune_hyperparameters=True, show_plots=True):
     
     # Confusion matrix
     logger.info("Creating confusion matrix...")  
-    fig_cm = models.plot_confusion_matrix(metrics["confusion_matrix"])
+    fig_cm = models_dashboard.plot_confusion_matrix(metrics["confusion_matrix"])
     logger.info("Confusion matrix created successfully") 
     
     # ROC curve with optimal threshold point (elbow)
     logger.info("Creating ROC curve...")  
-    fig_roc = models.plot_roc_curve(y_test, metrics["probabilities"])
+    fig_roc = models_dashboard.plot_roc_curve(y_test, metrics["probabilities"])
     logger.info("ROC curve created successfully")  
     # fig_roc.show()  # Should be commented out
     
     # Log completion
     logger.info("All visualizations created without showing")
-    print("✓ Visualizations created (view at /model_performance)")
+    print("✓ Visualizations created (view at /model-performance)")
     
     # Only show plots if requested (not when called from Flask)
     if show_plots:
@@ -147,7 +147,7 @@ def train_pipeline(tune_hyperparameters=True, show_plots=True):
     else:
         logger.info("NOT showing plots (show_plots=False)")
     
-    print("✓ Visualizations created (view at /model_performance)")
+    print("✓ Visualizations created (view at /model-performance)")
     
     print("\n" + "=" * 60)
     print(" " * 20 + "TRAINING COMPLETE!")
@@ -175,7 +175,7 @@ def test_predictions():
     print("-" * 40)
     
     # Load model and encoders
-    model = models.load_model()
+    model = models_dashboard.load_model()
     
     import joblib
     encoders = joblib.load(config.SAVED_MODELS_DIR / "encoders.pkl")
@@ -193,7 +193,7 @@ def test_predictions():
         "Cabin": "C123"
     }
     
-    result1 = models.predict_single(model, passenger1, encoders)
+    result1 = models_dashboard.predict_single(model, passenger1, encoders)
     print(f"\nPassenger 1 (First class woman):")
     print(f"  Survived: {result1['survived']}")
     print(f"  Probability: {result1['survival_probability']:.2%}")
@@ -211,7 +211,7 @@ def test_predictions():
         "Cabin": None
     }
     
-    result2 = models.predict_single(model, passenger2, encoders)
+    result2 = models_dashboard.predict_single(model, passenger2, encoders)
     print(f"\nPassenger 2 (Third class man):")
     print(f"  Survived: {result2['survived']}")
     print(f"  Probability: {result2['survival_probability']:.2%}")

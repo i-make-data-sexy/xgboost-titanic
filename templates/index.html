@@ -8,7 +8,7 @@
 {% block header %}
     <div class="header-nav">
         <h1>Titanic Survival Analysis</h1>
-        <p><a href="/model_performance">View the Model Performance dashboard</a></p>
+        <p><a href="/model-performance">View the Model Performance dashboard</a></p>
     </div>
 {% endblock %}s
 
@@ -95,7 +95,7 @@
                 message.innerHTML = `
                     ✓ Model trained successfully!<br>
                     Accuracy: ${result.metrics.accuracy}%<br>
-                    <a href="/model_performance" class="link">View Performance Metrics</a>
+                    <a href="/model-performance" class="link">View Performance Metrics</a>
                 `;
                 message.style.color = '#8BB42D';
                 

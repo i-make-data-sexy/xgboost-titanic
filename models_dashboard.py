@@ -317,15 +317,15 @@ def plot_feature_importance(model, feature_names):
         xaxis=dict(
             title="",
             showticklabels=False,
-            zeroline=True,              # Show the zero line
-            zerolinewidth=1,            # Make it thin (adjust as needed: 0.5 for thinner)
-            zerolinecolor="#DEDEDE",  # Light gray color
+            zeroline=True,                      # Show the zero line
+            zerolinewidth=1,                    # Make it thin (adjust as needed: 0.5 for thinner)
+            zerolinecolor="#DEDEDE",          # Light gray color
             showline=False,
             showgrid=False,
             range=[0, max_x * 1.15]
         ),
         yaxis_title="",
-        margin=dict(l=120, r=50, t=50, b=70),  # More space for labels
+        margin=dict(l=120, r=50, t=50, b=0),   # More space for labels
         margin_pad=5,
         plot_bgcolor="white",
         paper_bgcolor="white"
@@ -380,11 +380,11 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
     # Create text annotations for display
     text_display = [[str(cm[i,j]) for j in range(2)] for i in range(2)]
     
-    # Use go.Heatmap
+    # Use go.Heatmap to get the custom styling for cell color (px uses continuous)
     fig = go.Figure(data=go.Heatmap(
         z=z_for_colors,                           # Use binary matrix for colors
         text=text_display,                        # Use string version of values
-    texttemplate="%{text}",                       # Show the values
+        texttemplate="%{text}",                   # Show the values
         textfont={"size": 14, "color": "white"},  
         x=labels,
         y=labels,
@@ -424,7 +424,7 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
         height=600,
         plot_bgcolor="white",
         paper_bgcolor="white",
-        margin=dict(l=60, r=40, t=60, b=180)
+        margin=dict(l=60, r=40, t=60, b=150)        # Allow more space for annotation
     )
     
     # Add interpretation annotation

@@ -1,5 +1,5 @@
 """
-Main Flask application for the Titanic ML Dashboard.
+Main Flask application for the Titanic MLindex_dashboard.
 Simplified to focus on routing and coordination.
 """
 
@@ -11,8 +11,8 @@ from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import logging
 import config
-import dashboard
-import models
+import index_dashboard
+import models_dashboard
 import preprocessing
 import joblib
 from pathlib import Path
@@ -66,11 +66,11 @@ def index():
         df = load_titanic_data()
         
         # Create all dashboard charts
-        charts = dashboard.create_all_dashboard_charts(df)
+        charts = index_dashboard.create_all_dashboard_charts(df)
         
         # Convert charts to JSON for frontend
         chart_json = {
-            name: dashboard.convert_chart_to_json(chart)
+            name: index_dashboard.convert_chart_to_json(chart)
             for name, chart in charts.items()
         }
         
@@ -90,7 +90,7 @@ def index():
 
 # Add this route to your app.py file
 
-@app.route("/model_performance")
+@app.route("/model-performance")
 def model_performance():
     """
     Display model performance metrics and evaluation charts.
@@ -124,7 +124,7 @@ def model_performance():
         y = df_processed[config.TARGET_COLUMN]
         
         # Split data (using same seed for consistency)
-        X_train, X_test, y_train, y_test = models.split_data(X, y)
+        X_train, X_test, y_train, y_test = models_dashboard.split_data(X, y)
         
         # Get predictions for metrics
         y_pred = model.predict(X_test)
@@ -142,21 +142,21 @@ def model_performance():
         f1 = f1_score(y_test, y_pred)
         
         # Cross-validation score
-        cv_scores = models.cross_validate_model(model, X, y)
+        cv_scores = models_dashboard.cross_validate_model(model, X, y)
         
         # Create visualization charts
-        importance_fig = models.plot_feature_importance(model, X.columns.tolist())
-        confusion_fig = models.plot_confusion_matrix(cm)
-        roc_fig = models.plot_roc_curve(y_test, y_pred_proba)
+        importance_fig = models_dashboard.plot_feature_importance(model, X.columns.tolist())
+        confusion_fig = models_dashboard.plot_confusion_matrix(cm)
+        roc_fig = models_dashboard.plot_roc_curve(y_test, y_pred_proba)
         
         # Convert charts to JSON
-        importance_json = dashboard.convert_chart_to_json(importance_fig)
-        confusion_json = dashboard.convert_chart_to_json(confusion_fig)
-        roc_json = dashboard.convert_chart_to_json(roc_fig)
+        importance_json = index_dashboard.convert_chart_to_json(importance_fig)
+        confusion_json = index_dashboard.convert_chart_to_json(confusion_fig)
+        roc_json = index_dashboard.convert_chart_to_json(roc_fig)
         
         # Render template with all data
         return render_template(
-            "model_performance.html",
+            "model-performance.html",
             importance_chart=importance_json,
             confusion_chart=confusion_json,
             roc_chart=roc_json,
@@ -200,7 +200,7 @@ def predict():
         passenger_data = request.json
         
         # Make prediction
-        result = models.predict_single(model, passenger_data, encoders)
+        result = models_dashboard.predict_single(model, passenger_data, encoders)
         
         return jsonify(result)
         
