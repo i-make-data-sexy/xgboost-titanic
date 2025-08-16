@@ -543,7 +543,7 @@ def plot_roc_curve(y_true, y_scores):
     roc_df = pd.DataFrame({
         "False Positive Rate": fpr,
         "True Positive Rate": tpr,
-        "Model": f"ROC Curve (AUC = {roc_auc:.3f})"
+        "Model": f"ROC Curve (AUC = {roc_auc:.2f})"
     })
     
     # Add diagonal reference line
@@ -564,7 +564,7 @@ def plot_roc_curve(y_true, y_scores):
         color="Model",
         title="ROC Curve",
         color_discrete_map={
-            f"ROC Curve (AUC = {roc_auc:.3f})": config.BRAND_COLORS["blue"],
+            f"ROC Curve (AUC = {roc_auc:.2f})": config.BRAND_COLORS["blue"],
             "Random Classifier": "gray"
         }
     )
@@ -579,26 +579,71 @@ def plot_roc_curve(y_true, y_scores):
             color=config.BRAND_COLORS["orange"],
             symbol="star"
         ),
-        name=f"Optimal (threshold={optimal['threshold']:.3f})",
+        name=f"Optimal (threshold={optimal['threshold']:.2f})",
         hovertemplate=(
             f"<b>Optimal Threshold (Elbow)</b><br>"
-            f"Threshold: {optimal['threshold']:.3f}<br>"
-            f"Sensitivity: {optimal['sensitivity']:.1%}<br>"
-            f"Specificity: {optimal['specificity']:.1%}<br>"
-            f"False Positive Rate: {optimal['fpr']:.1%}<br>"
-            f"True Positive Rate: {optimal['tpr']:.1%}<br>"
+            f"Threshold: {optimal['threshold']:.2f}<br>"
+            f"Sensitivity: {optimal['sensitivity']:.2f}<br>"
+            f"Specificity: {optimal['specificity']:.2f}<br>"
+            f"False Positive Rate: {optimal['fpr']:.2f}<br>"
+            f"True Positive Rate: {optimal['tpr']:.2f}<br>"
+            f"<br>" 
+            f"Interpretation:<br>" 
+            f"<i>This is the best balance point where the model<br>"            # Non-technical explanation starts
+            f"correctly identifies the most actual survivors<br>"
+            f"while minimizing false positives (i.e., those the model <br>"
+            f"predicted to survive who actually died). At this threshold,<br>"
+            f"the model catches {optimal['sensitivity']:.0%} of survivors with only {optimal['fpr']:.0%} <br>"
+            f"false positives.</i><br>"          # Explanation ends
             "<extra></extra>"
         )
     )
     
-    # Update line styles
+    # ROC curve line
     fig.update_traces(
         line=dict(width=2),
-        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.3f})")
+        selector=dict(name=f"ROC Curve (AUC = {roc_auc:.2f})"),
+        hovertemplate=(
+            "<b>%{fullData.name}</b><br>"
+            "True Positive Rate: %{y:.2f}<br>"              
+            "False Positive Rate: %{x:.2f}<br>"              
+            "<br>"                                           
+            "<b>Interpretation:</b><br>"                                                         # Interpretation starts
+            "<i>At this threshold setting, the model would<br>"
+            "correctly identify %{y:.0%} of actual survivors<br>"
+            "(True Positive Rate) but would also incorrectly<br>"
+            "flag %{x:.0%} of non-survivors as survivors<br>"
+            "(False Positive Rate).</i><br>"
+            "<br>"
+            f"<i>An Area Under the Curve (AUC) score of {roc_auc:.2f}<br>"
+            f"means this model is {'excellent' if roc_auc > 0.9 else 'good' if roc_auc > 0.8 else 'decent' if roc_auc > 0.7 else 'moderate'} at distinguishing <br>"
+            f"between survivors and non-survivors. <br>" 
+            f"(Perfect = 1, Random = 0.5, Excellent > 0.9, <br>"
+            f"Good > 0.8, Decent > 0.7)</i><br>"                                                  # AUC explanation
+            "<extra></extra>"                                                                     # Interpretation ends  
+        )
     )
+    
+    # Random classifier line
     fig.update_traces(
         line=dict(width=1, dash="dash"),
-        selector=dict(name="Random Classifier")
+        selector=dict(name="Random Classifier"),
+        hovertemplate=(
+            "<b>Random Classifier (Baseline)</b><br>"
+            "True Positive Rate: %{y:.2f}<br>"
+            "False Positive Rate: %{x:.2f}<br>"
+            "<br>"
+            "<b>Interpretation:</b><br>"
+            "<i>This diagonal line represents a model with<br>"
+            "no predictive power—like flipping a coin. <br>"
+            "It shows what would happen if we randomly<br>"
+            "guessed who survived.</i><br>"
+            "<br>"
+            "<i>Our model's ROC curve suggests it's learning <br>"
+            "real patterns, not just guessing. The farther it is above <br>"
+            "this reference line the better the model! </i>🏆<br>"
+            "<extra></extra>"
+        )
     )
     
     # Update layout
