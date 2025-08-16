@@ -84,19 +84,21 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Success
-                    message.innerHTML = `
-                        ✓ Model trained successfully!<br>
-                        Accuracy: ${result.metrics.accuracy}%<br>
-                        <a href="/model_performance">View Performance Metrics →</a>
-                    `;
-                    message.style.color = '#8BB42D';
-                    
-                    // Update status
-                    // document.getElementById('model-status').textContent = '✓ Model trained and ready';
-                    // document.getElementById('model-status').style.color = 'green';
-                    btnText.textContent = 'Retrain Model';
-                } else {
+                // Success
+                
+                // Move the message below the button instead of as a tooltip
+                message.innerHTML = `
+                    ✓ Model trained successfully!<br>
+                    Accuracy: ${result.metrics.accuracy}%<br>
+                    <a href="/model_performance" class="link">View Performance Metrics</a>
+                `;
+                message.style.color = '#8BB42D';
+                
+                // Update status
+                // document.getElementById('model-status').textContent = '✓ Model trained and ready';
+                // document.getElementById('model-status').style.color = 'green';
+                btnText.textContent = 'Retrain Model';
+            } else {
                     // Error
                     message.textContent = `Error: ${result.error}`;
                     message.style.color = 'red';

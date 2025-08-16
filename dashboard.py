@@ -282,7 +282,11 @@ def create_age_survival_chart(df):
         texttemplate="%{text:.0f}%",
         textposition="inside",
         hoverinfo='skip',                               # Disabled hovertemplate b/c no new info
-        hovertemplate=None                              # Disabled hovertemplate b/c no new info
+        hovertemplate=None,                             # Disabled hovertemplate b/c no new info
+        marker=dict(
+            line_color="white", 
+            line_width=1.8)
+
     )
     
     fig.update_layout(
