@@ -161,12 +161,12 @@ def model_performance():
             confusion_chart=confusion_json,
             roc_chart=roc_json,
             accuracy=f"{accuracy:.1f}",
-            roc_auc=f"{roc_auc:.3f}",
-            cv_score=f"{cv_scores['mean']:.3f} ± {cv_scores['std']:.3f}",
+            roc_auc=f"{roc_auc:.2f}",
+            cv_score=f"{cv_scores['mean']:.2f} ± {cv_scores['std']:.2f}",
             # Pass additional metrics
             precision=f"{precision:.1f}",
             recall=f"{recall:.1f}",
-            f1_score=f"{f1:.3f}"
+            f1_score=f"{f1:.2f}"
         )
         
     except Exception as e:
