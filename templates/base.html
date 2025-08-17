@@ -20,6 +20,46 @@
     {% block head %}{% endblock %}
 </head>
 <body>
+    {# Google Tag Manager #}
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5FJGP2"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    {# Header with WordPress-style navigation reused from ML Model Picker #}
+    <header class="site-header">
+
+        {# Use custom header class if defined, otherwise default to 'wrap' - to allow for a full-width header on index.html #}
+        <div class="{{ self.header_class() if self.header_class is defined else 'wrap' }}">  
+
+            {# Logo and site branding area #}
+            <div class="title-area">
+                <a href="https://www.annielytics.com/"> 
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Annielytics Logo" class="header-logo">
+                </a>
+            </div>
+
+            {# This doesn't work in just this app; I don't know why #}
+            {# <button class="menu-toggle" aria-expanded="false">MENU</button> #}
+
+            {# Alternative solution suggested by Claude (pers acct: https://bit.ly/4kHRzHf) #}
+            <input type="checkbox" id="menu-toggle-checkbox" class="hidden">
+            {# Replace the button with a label that has the same styling #}
+            <label for="menu-toggle-checkbox" class="menu-toggle" aria-expanded="false">MENU</label>
+
+            {# Primary navigation menu #}
+            <nav class="nav-primary">
+                <ul class="menu">
+                    <li><a href="https://www.annielytics.com/about/">About</a></li>
+                    <li><a href="https://www.annielytics.com/services/">Services</a></li>
+                    <li><a href="https://www.annielytics.com/tools/">Tools</a></li>
+                    <li><a href="https://www.annielytics.com/blog/">Blog</a></li>
+                    <li><a href="https://www.annielytics.com/tips/">Tips</a></li>
+                    <li><a href="https://www.annielytics.com/sexy-data/">Portfolio</a></li>
+                    <li><a href="https://www.annielytics.com/contact/">Contact</a></li>
+                    <li><a href="https://www.annielytics.com/login/">Log In</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
     <div class="dashboard-container">
         {# Header with dynamic title #}
         <div class="header">
@@ -44,5 +84,23 @@
     
     {# Block for page-specific scripts at bottom #}
     {% block scripts %}{% endblock %}
+
+    {# NEW: Add hamburger menu functionality #}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menu-toggle-checkbox');
+        const menu = document.querySelector('.nav-primary .menu');
+        
+        if (menuToggle && menu) {  /* NEW: Add safety check */
+            menuToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    menu.classList.add('visible');
+                } else {
+                    menu.classList.remove('visible');
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>
