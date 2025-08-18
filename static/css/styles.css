@@ -197,10 +197,10 @@
     background: white;
     border: solid 1px #DEDEDE;
     border-radius: 8px;
-    padding: 10px;
+    /* padding: 10px; */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     min-height: 350px;
-overflow: hidden;                   /* Prevent overflow */
+    overflow: hidden;                   /* Prevent overflow */
     position: relative;
 }
 
@@ -401,8 +401,27 @@ p a:hover {
     overflow: hidden;
 }
 
-.plot-container {
-    min-width: 600px;
+/* Force Plotly elements to fill container */
+.chart-container .js-plotly-plot,
+.chart-container .plot-container,
+.chart-container .svg-container,
+.chart-container .plotly {
+    width: 100% !important;
+}
+
+/* Target Plotly's generated divs */
+.chart-container div[class*="plotly"] {
+    width: 100% !important;
+}
+
+/* Override SVG width attribute */
+.chart-container svg.main-svg {
+    width: 100% !important;
+}
+
+/* Override Plotly's inline styles */
+.chart-container .user-select-none.svg-container {
+    width: 100% !important;
 }
 
 /* ================================================
@@ -414,6 +433,7 @@ p a:hover {
 .model-charts-grid {
     display: flex;
     flex-direction: column;
+    overflow-x: auto;
     gap: 2rem;
     padding: 1rem;
 }
@@ -427,6 +447,7 @@ p a:hover {
 .model-chart-row .chart-container {
     flex: 1;
     min-height: 600px;
+    min-width: 600px;
 }
 
 .chart-full-width {
@@ -763,27 +784,9 @@ p a:hover {
 }
 
 /* ================================================
-   XGB: Breakpoint: 1280px - Break into 2 rows (3 columns each)
+   XGB: Breakpoint: 1400px - Keep charts min width 600px
    ================================================ */
-@media only screen and (max-width: 1280px) {
-
-    /* Executive summary cards */
-
-    .metrics-summary {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);  /* 3 columns, 2 rows */
-        max-width: 900px;
-        margin: 2rem auto;
-    }
-    
-    .metric-card {
-        width: 100%;  /* Full width of grid cell */
-        min-width: 180px;
-    }
-
-    .metric-value {
-        text-align: center;
-    }
+@media only screen and (max-width: 1400px) {
 
     /* Charts */
 
@@ -810,6 +813,54 @@ p a:hover {
     }
 }
 
+
+/* ================================================
+   XGB: Breakpoint: 1280px - Break into 2 rows (3 columns each)
+   ================================================ */
+@media only screen and (max-width: 1280px) {
+
+    .charts-grid {
+        grid-template-columns: 1fr;             /* Single column */
+        overflow-x: auto;                       /* Allow horizontal scroll for wide charts */
+    }
+    
+    /* Model performance charts in single column */
+    .model-chart-row {
+        flex-direction: column;
+    }
+    
+    .model-chart-row .chart-container {
+        width: 100%;
+        /* min-width: 800px; */
+        margin-bottom: 20px;
+    }
+    
+    /* Center the dashboard container */
+    .dashboard-container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+}
+
+/* ================================================
+   XGB: Breakpoint: 1000 Executive Summary 2 columns
+   ================================================ */
+
+@media only screen and (max-width: 1000px) {
+    .metrics-summary {
+        grid-template-columns: repeat(2, 1fr);      /* 2 columns, 3 rows */
+    }
+    
+    /* Ensure chart containers can scroll horizontally */
+    .chart-container {
+        overflow-x: auto;
+    }
+
+    .metric-value {
+        font-size: 2rem;
+    }
+}
+
 /* ===============================
    A: 801-1023px
   ============================== */
@@ -822,13 +873,13 @@ p a:hover {
        padding: 40px;
    }
 
-   h2 {
+   /* h2 {
        font-size: 36px;
    }
 
    h3 {
        font-size: 30px;
-   }
+   } */
 
    .site-header .wrap,
    .site-header .wrap-fluid {
@@ -879,26 +930,6 @@ p a:hover {
 
 }
 
-/* ================================================
-   XGB: Breakpoint: 960 Executive Summary 2 columns
-   ================================================ */
-
-@media only screen and (max-width: 960px) {
-    .metrics-summary {
-        grid-template-columns: repeat(2, 1fr);      /* 2 columns, 3 rows */
-        max-width: 500px;
-    }
-    
-    /* Ensure chart containers can scroll horizontally */
-    .chart-container {
-        overflow-x: auto;
-    }
-
-    .metric-value {
-        font-size: 2rem;
-    }
-}
-
 
 /* ===============================
    XGB & A: Small Devices (<800px)
@@ -924,6 +955,10 @@ p a:hover {
         overflow: scroll;
     }
 
+    .footer::before {
+        margin: 0;
+    }
+
     .footer {
         position: relative;
         display: flex;
@@ -939,6 +974,7 @@ p a:hover {
         width: 100%;
         justify-items: center;                      /* Center items horizontally */
         align-items: center;                        /* Center items vertically */
+        margin-top: 30px;
     }
 
     /* Card-like footer links for small screens */
@@ -1042,25 +1078,13 @@ p a:hover {
        padding: 0;
        margin-top: 10px !important;
    }
-
-   h2 {
-       font-size: 30px;
-   }
-
-   h3 {
-       font-size: 25px;
-   }
-
-   /* .footer-nav {
-        flex-wrap: wrap;
-        justify-content: center;
-    } */
 }
 
 
 /* ================================================
    XGB: Breakpoint 600px 
    ================================================ */
+   
 @media only screen and (max-width: 600px) {
      /* Adjust container padding for mobile */
     .dashboard-container {

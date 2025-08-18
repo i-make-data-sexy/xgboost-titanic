@@ -346,7 +346,7 @@ def plot_feature_importance(model, feature_names):
             range=[0, max_x * 1.15]
         ),
         yaxis_title="",
-        margin=dict(l=120, r=50, t=50, b=0),   # More space for labels
+        margin=dict(l=120, r=50, t=50, b=10),   # More space for labels
         margin_pad=5,
         plot_bgcolor="white",
         paper_bgcolor="white",
@@ -463,7 +463,7 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
         xref="paper",
         yref="paper",
         x=0,
-        y=-0.2,
+        y=-0.15,
         xanchor="left",
         yanchor="top",
         showarrow=False,
