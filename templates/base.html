@@ -74,10 +74,12 @@
         {# Footer - consistent across all pages #}
         <div class="footer">
             {% block footer %}
-            <a href="{{ url_for('index') }}">Titanic Survival Analysis Dashboard</a> | 
-            <a href="{{ url_for('model_performance') }}">Model Performance Dashboard</a> |  
-            <a href="{{ url_for('model_info') }}">Model Info</a> | 
-            <a href="https://github.com/i-make-data-sexy/xgboost-titanic/tree/feature/add-flask-dashboard-app" target="_blank">GitHub Repo</a>
+            <div class="footer-nav">
+                <a href="{{ url_for('index') }}" class="footer-link">Data Exploration</a>  
+                <a href="{{ url_for('model_performance') }}" class="footer-link">Model Performance</a>   
+                <a href="{{ url_for('model_info') }}" class="footer-link">Model Info</a>  
+                <a href="https://github.com/i-make-data-sexy/xgboost-titanic/tree/feature/add-flask-dashboard-app" target="_blank" class="footer-link">GitHub Repo</a>
+            </div>
             {% endblock %}
         </div>
     </div>

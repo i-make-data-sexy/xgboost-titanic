@@ -36,3 +36,6 @@ venv/
 # ========================================================================
 archive/
 export/
+annielytics.conf
+xgboost-demo.service
+server/
