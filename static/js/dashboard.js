@@ -210,3 +210,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+
+/* ======================================================================
+    Tooltip Positioning
+   ======================================================================= */
+
+// NEW: Keep tooltips within viewport
+document.addEventListener('mouseover', function(e) {
+    if (e.target.classList.contains('info-icon')) {
+        const tooltip = window.getComputedStyle(e.target, ':before');
+        const rect = e.target.getBoundingClientRect();
+        
+        // Adjust tooltip position if it would go off screen
+        if (rect.left < 160) {  // Too close to left edge
+            e.target.style.setProperty('--tooltip-left', '0');
+            e.target.style.setProperty('--tooltip-transform', 'translateY(-10px)');
+        } else if (rect.right > window.innerWidth - 160) {  // Too close to right edge
+            e.target.style.setProperty('--tooltip-left', 'auto');
+            e.target.style.setProperty('--tooltip-right', '0');
+            e.target.style.setProperty('--tooltip-transform', 'translateY(-10px)');
+        }
+    }
+});
