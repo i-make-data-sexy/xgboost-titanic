@@ -7,7 +7,7 @@
 {# Set the header text #}
 {% block header %}
     <div class="header-nav">
-        <h1>Titanic Model Performance Dashboard</h1>
+        <h1>Model Performance Dashboard</h1>
     </div>
 {% endblock %}
 
@@ -37,15 +37,15 @@
             </div>
             <div class="metric-card">
                 <span class="metric-label">
-                    Cross-Validation Score
-                    <span class="info-icon" data-tooltip="Cross-Validation Score shows how consistently the model performs across different data splits. The ± value shows the variation. Higher scores are better, while lower variation is better (i.e., more consistent). Scores above 0.8 with variation below ±0.05 indicate stable, reliable performance.">ⓘ</span>
+                    CV Score
+                    <span class="info-icon" data-tooltip="The Cross-Validation Score assesses how consistently the model performs across different data splits. The ± value shows the variation. Higher scores are better, while lower variation is better (i.e., more consistent). Scores above 0.8 with variation below ±0.05 indicate stable, reliable performance.">ⓘ</span>
                 </span>
                 <span class="metric-value">{{ cv_score }}</span>
             </div>
             <div class="metric-card">
                 <span class="metric-label">
                     Precision
-                    <span class="info-icon" data-tooltip="Of all passengers the model predicted would survive, what percentage actually survived? Higher is better. Above 70% is good, above 80% is excellent. Higher precision means fewer false positives (i.e., fewer times the model predicted a passenger who died would have survived, providing false hope).">ⓘ</span>
+                    <span class="info-icon" data-tooltip="Of all passengers the model predicted would survive, what percentage actually survived? Higher is better. Above 70% is good, above 80% is excellent. Higher precision means fewer false positives (i.e., fewer times the model predicted a passenger who died would have survived.">ⓘ</span>
                 </span>
                 <span class="metric-value">{{ precision }}%</span>
             </div>

@@ -47,47 +47,6 @@
     }
 
 
-
-/* ========================================================================
-Annielytics Fonts
-======================================================================== */
-
-@font-face {
-    font-family: 'Ek Mukta';
-    src: url('static/fonts/ek-mukta/EkMukta-Light.ttf') format('truetype');
-    font-weight: 200;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Ek Mukta';
-    src: url('static/fonts/ek-mukta/EkMukta-Regular.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Ek Mukta';
-    src: url('static/fonts/ek-mukta/EkMukta-Medium.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Ek Mukta';
-    src: url('static/fonts/ek-mukta/EkMukta-SemiBold.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Ek Mukta';
-    src: url('static/fonts/ek-mukta/EkMukta-Bold.ttf') format('truetype');
-    font-weight: 600;
-    font-style: normal;
-}
-
-
 /* ========================================================================
    Annielytcs Header Styles
    ======================================================================== */
@@ -139,7 +98,7 @@ Annielytics Fonts
   Navigation
   ======================================================================== */
 
-/* NEW: Fix navigation alignment */
+/* Fix navigation alignment */
 .nav-primary {
     position: relative;
 }
@@ -367,17 +326,8 @@ p a:hover {
 }
 
 
-/* ================================================
-    Footer 
-   ================================================ */
-
-
-
-
-
-
 /* ========================================================================
-   Footer Styles - Updated 3/22/25 to match other apps
+   Footer Styles 
    ======================================================================== */
 
 .footer {
@@ -391,7 +341,7 @@ p a:hover {
 .footer::before {
     content: '';
     position: absolute;
-    margin: 0 0 2rem 0; 
+    margin: 2rem 0 2rem 0;
     top: 0;
     width: 225px;  
     height: 1px;
@@ -402,7 +352,7 @@ p a:hover {
     display: flex;
     justify-content: space-evenly;
     max-width: 800px;
-    margin-top: 2em;
+    margin-top: 60px;
 }
 
 .footer-link {
@@ -410,14 +360,13 @@ p a:hover {
     font-size: 20px;
     text-decoration: none;
     padding: 0.5rem 1rem;
-    transition: color 0.3s ease, transform 0.2s ease;
+    transition: color 0.5s ease, transform 0.5s ease;
 }
 
 .footer-link:hover {
     color: #0273be;
+    text-decoration: underline;
 }
-
-
 
 
 /* ======================================================================
@@ -454,7 +403,6 @@ p a:hover {
 
 .plot-container {
     min-width: 600px;
-    overflow: auto;
 }
 
 /* ================================================
@@ -489,20 +437,45 @@ p a:hover {
     Exec Summary Cards
    ============================== */
 
+/* Executive Summary Section */
+.executive-summary {
+    background: white;
+    padding: 10px;
+    margin: 15px;
+    border-radius: 8px;
+    border: solid 1px #DEDEDE;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Experiment */
+
 .metrics-summary {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin: 2rem 0;
-    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* 3 columns, 2 rows */
+    max-width: 1400px;
+    margin: 1.5rem;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
 }
 
 .metric-card {
+    width: 100%;                    /* Full width of grid cell */
+    min-width: 180px;
     background: white;
     border-radius: 8px;
     padding: 1.5rem 2rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: left;
+    border: solid 0.05px #DEDEDE;
+}
+
+.metric-value {
+    text-align: center;
+    display: block;
+    font-size: 2.7rem;
+    font-weight: 400;
+    color: #1a73e8;
 }
 
 .metric-label {
@@ -510,13 +483,6 @@ p a:hover {
     font-size: 0.8rem;
     color: #666;
     margin-bottom: 0.5rem;
-}
-
-.metric-value {
-    display: block;
-    font-size: 1.8rem;
-    font-weight: 400;
-    color: #1a73e8;
 }
 
 /* Adjust metric card layout for labels with icons */
@@ -676,31 +642,13 @@ p a:hover {
     Info Icons
    ======================================================================= */
 
-/* Executive Summary Section */
-.executive-summary {
-    background: white;
-    padding: 10px;
-    margin: 15px;
-    border-radius: 8px;
-    border: solid 1px #DEDEDE;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Update metrics summary to wrap */
-.metrics-summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: space-around;
-}
-
 /* Info Icon Styles */
 .info-icon {
     cursor: help !important;
     position: relative;
     display: inline-block;
     vertical-align: super;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     font-family: 'Ek Mukta', sans-serif;
     font-weight: 200;
     color: #8BB42D;
@@ -750,219 +698,11 @@ p a:hover {
 
 
 /* ======================================================================
-    Responsive: XGBoost Demo
+    Responsive
    ======================================================================= */
 
-/* ================================================
-   Breakpoint: 1280px - Break into 2 rows (3 columns each)
-   ================================================ */
-@media only screen and (max-width: 1280px) {
-    .metrics-summary {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);  /* 3 columns, 2 rows */
-        max-width: 900px;
-        margin: 2rem auto;
-    }
-    
-    .metric-card {
-        width: 100%;  /* Full width of grid cell */
-        min-width: 180px;
-    }
-
-    .metric-value {
-        text-align: center;
-    }
-}
-
-/* ================================================
-   Breakpoint: 1280px - Single column charts
-   ================================================ */
-@media only screen and (max-width: 1280px) {
-    /* Charts in single column */
-    .charts-grid {
-        grid-template-columns: 1fr;  /* Single column */
-        overflow-x: auto;  /* Allow horizontal scroll for wide charts */
-    }
-    
-    /* Model performance charts in single column */
-    .model-chart-row {
-        flex-direction: column;
-    }
-    
-    .model-chart-row .chart-container {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    
-    /* Center the dashboard container */
-    .dashboard-container {
-        padding: 20px;
-        margin: 20px auto;
-    }
-}
-
-/* ================================================
-   Breakpoint: 768px - Hide nav links
-   ================================================ */
-@media only screen and (max-width: 768px) {
-    /* Hide dashboard navigation links */
-    .header-nav > p,
-    .header-nav > a,
-    .header-nav .link {
-        display: none !important;
-    }
-    
-    /* Adjust header for single element */
-    .header-nav {
-        justify-content: left;
-    }
-
-    /* Card-like footer links for small screens */
-    .footer-link {
-        display: block;
-        width: 220px;
-        padding: 12px 10px;
-        background-color: rgba(248, 249, 250, 0.9);
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: box-shadow 0.3s, transform 0.3s, color 0.3s;
-        text-align: center;
-        margin: 6px;
-        font-size: 16px;
-        color: #666;
-    }
-
-    .footer-link:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        transform: translateY(-3px);
-        /* color: #0273be; */
-        color: white;
-        background-color: var(--color-brand-orange);
-        text-decoration: none;
-    }
-
-    .footer {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin: 20px 20px;
-    }
-
-    .footer-nav {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* Create 2 columns */
-        gap: 15px; /* Even spacing between items */
-        width: 100%;
-        max-width: 300px;
-        justify-items: center; /* Center items horizontally */
-        align-items: center; /* Center items vertically */
-    }
-    
-}
-
-/* ================================================
-   Breakpoint: 660px - Executive Summary 3 rows (2 columns)
-   ================================================ */
-@media only screen and (max-width: 660px) {
-    .metrics-summary {
-        grid-template-columns: repeat(2, 1fr);  /* 2 columns, 3 rows */
-        max-width: 500px;
-    }
-    
-    /* Ensure chart containers can scroll horizontally */
-    .chart-container {
-        overflow-x: auto;
-    }
-}
-
-/* ================================================
-   Breakpoint: 510px - Executive Summary single column
-   ================================================ */
-@media only screen and (max-width: 510px) {
-    .metrics-summary {
-        grid-template-columns: 1fr;  /* Single column */
-        max-width: 350px;
-    }
-    
-    .metric-card {
-        max-width: 300px;
-        margin: 0 auto;
-    }
-    
-    /* Footer in single column */
-    .footer {
-        grid-template-columns: 1fr;
-        max-width: 160px;
-    }
-    
-    /* Adjust container padding for mobile */
-    .dashboard-container {
-        padding: 15px;
-        margin: 10px;
-        border-radius: 15px;
-    }
-    
-    /* Smaller headings on mobile */
-    h1 {
-        font-size: 1.5rem;
-    }
-    
-    h2 {
-        font-size: 1.2rem;
-        margin: 20px 0 0 10px;
-    }
-
-    .footer-link {
-        display: block;
-        width: 120px;
-        padding: 12px 10px;
-        background-color: rgba(248, 249, 250, 0.9);
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: box-shadow 0.3s, transform 0.3s, color 0.3s;
-        text-align: center;
-        margin: 6px;
-        font-size: 16px;
-        color: #666;
-    }
-
-    .footer-link:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        transform: translateY(-3px);
-        /* color: #0273be; */
-        color: white;
-        background-color: var(--color-brand-orange);
-        text-decoration: none;
-    }
-
-    .footer {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin: 20px 20px;
-    }
-
-    .footer-nav {
-        display: grid;
-        grid-template-columns: 1fr 1fr;     /* Create 2 columns */
-        gap: 15px;                          /* Even spacing between items */
-        width: 100%;
-        max-width: 300px;
-        justify-items: center;              /* Center items horizontally */
-        align-items: center;                /* Center items vertically */
-    }
-}
-
-
-
-/* ========================================================================
-  Responsive: Annielytics Site Elements
-  ======================================================================== */
-
 /* ===============================
-   Large Devices (>1024px)  - Updated 3/22/35 to match other apps
+   A: Large Devices (>1024px) 
   ============================== */
 
 @media only screen and (min-width: 1024px) {
@@ -972,8 +712,8 @@ p a:hover {
    .site-header {
        padding: 0 15px;
        height: 76px;
-       display: flex;                     /* NEW: Use flexbox */
-       justify-content: center;           /* NEW: Center horizontally */
+       display: flex;                     /* Use flexbox */
+       justify-content: center;           /* Center horizontally */
    }
   
    .site-header .wrap-fluid {
@@ -1026,8 +766,56 @@ p a:hover {
 
 }
 
+/* ================================================
+   XGB: Breakpoint: 1280px - Break into 2 rows (3 columns each)
+   ================================================ */
+@media only screen and (max-width: 1280px) {
+
+    /* Executive summary cards */
+
+    .metrics-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);  /* 3 columns, 2 rows */
+        max-width: 900px;
+        margin: 2rem auto;
+    }
+    
+    .metric-card {
+        width: 100%;  /* Full width of grid cell */
+        min-width: 180px;
+    }
+
+    .metric-value {
+        text-align: center;
+    }
+
+    /* Charts */
+
+    .charts-grid {
+        grid-template-columns: 1fr;             /* Single column */
+        overflow-x: auto;                       /* Allow horizontal scroll for wide charts */
+    }
+    
+    /* Model performance charts in single column */
+    .model-chart-row {
+        flex-direction: column;
+    }
+    
+    .model-chart-row .chart-container {
+        width: 100%;
+        /* min-width: 800px; */
+        margin-bottom: 20px;
+    }
+    
+    /* Center the dashboard container */
+    .dashboard-container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+}
+
 /* ===============================
-   Medium Devices (801-1023px) 
+   A: 801-1023px
   ============================== */
 
 @media only screen and (max-width: 1023px) and (min-width: 801px) {
@@ -1095,13 +883,92 @@ p a:hover {
 
 }
 
+/* ================================================
+   XGB: Breakpoint: 960 Executive Summary 2 columns
+   ================================================ */
+
+@media only screen and (max-width: 960px) {
+    .metrics-summary {
+        grid-template-columns: repeat(2, 1fr);      /* 2 columns, 3 rows */
+        max-width: 500px;
+    }
+    
+    /* Ensure chart containers can scroll horizontally */
+    .chart-container {
+        overflow-x: auto;
+    }
+
+    .metric-value {
+        font-size: 2rem;
+    }
+}
+
+
 /* ===============================
-   Small Devices (<800px)
+   XGB & A: Small Devices (<800px)
   ============================== */
 
 @media only screen and (max-width: 800px) {
 
-   /* REUSABLE */
+    /* XGB */
+
+   /* Hide dashboard navigation links */
+    .header-nav > p,
+    .header-nav > a,
+    .header-nav .link {
+        display: none !important;
+    }
+    
+    /* Adjust header for single element */
+    .header-nav {
+        justify-content: left;
+    }
+
+    .model-chart-row .chart-container {
+        overflow: scroll;
+    }
+
+    .footer {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 20px;
+    }
+
+    .footer-nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr;             /* Create 2 columns */
+        gap: 15px;                                  /* Even spacing between items */
+        width: 100%;
+        justify-items: center;                      /* Center items horizontally */
+        align-items: center;                        /* Center items vertically */
+    }
+
+    /* Card-like footer links for small screens */
+    .footer-link {
+        display: block;
+        width: 220px;
+        padding: 12px 10px;
+        background-color: rgba(248, 249, 250, 0.9);
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: box-shadow 0.3s, transform 0.3s, color 0.3s;
+        text-align: center;
+        margin: 6px;
+        font-size: 16px;
+        color: #666;
+    }
+
+    .footer-link:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        color: white;
+        background-color: var(--color-brand-orange);
+        text-decoration: none;
+    }
+   
+    /* Annielytics */
 
    .container-fluid {
        padding: 20px;
@@ -1180,10 +1047,6 @@ p a:hover {
        margin-top: 10px !important;
    }
 
-
-   /* END NEW - 3/22/25 */
-
-
    h2 {
        font-size: 30px;
    }
@@ -1192,8 +1055,56 @@ p a:hover {
        font-size: 25px;
    }
 
-   .footer-nav {
+   /* .footer-nav {
         flex-wrap: wrap;
         justify-content: center;
+    } */
+}
+
+
+/* ================================================
+   XGB: Breakpoint 600px 
+   ================================================ */
+@media only screen and (max-width: 600px) {
+     /* Adjust container padding for mobile */
+    .dashboard-container {
+        padding: 15px;
+        margin: 10px;
+        border-radius: 15px;
+    }
+
+    .metrics-summary {
+        grid-template-columns: 1fr !important;                 /* Single column */
+        /* max-width: 350px; */
+    }
+    
+    .metric-card {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    /* Footer in single column */
+    .footer {
+        grid-template-columns: 1fr;
+        /* max-width: 160px; */
+    }
+
+    .footer-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-link {
+        width: 100%;
+    }
+    
+    /* Smaller headings on mobile */
+    h1 {
+        font-size: 1.8em;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+        margin: 20px 0 0 10px;
     }
 }
