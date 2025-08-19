@@ -765,7 +765,7 @@ p a:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1.5em;
-    margin: 2em 15px 3em;
+    margin: 1em 15px 3em;
 }
 
 .model-metric-card {
@@ -805,6 +805,10 @@ p a:hover {
     padding: 1.5em;
     border-radius: 8px;
     border-left: 4px solid #FFA500;
+    border-top: solid 0.5px #DEDEDE;
+    border-right: solid 0.5px #DEDEDE;
+    border-bottom: solid 0.5px #DEDEDE;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .feature-card h4 {

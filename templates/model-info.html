@@ -9,7 +9,7 @@ Titanic Survival Prediction Model Information
 {% endblock %}
 
 {# Set the header text #}
-{% block header %}
+<{% block header %}
     <div class="header-nav">
         <h1>XGBoost Classifier Model Info</h1>
     </div>
@@ -18,9 +18,12 @@ Titanic Survival Prediction Model Information
 {# Main content section #}
 {% block content %}
     <div class="entry-content">
-        <p>Want to peek under the hood? This page provides a detailed overview of the XGBoost model 
-            powering the Titanic survival predictions. Below you'll find the model's configuration, 
-            the features it considers, and how it makes its predictions.</p>
+        <h2>How to Use This Page</h2>
+        <p>This page gives you a peek under the hood of the model I used for this project. It provides a detailed overview of the XGBoost model 
+            powering the Titanic survival predictions. You'll find the model's configuration, the features it considers, and how it made its predictions.</p>
+        
+        <h2>Executive Summary</h2>
+        <p>Below is a 100-foot view of the model and the dataset.</p>
         
         {# Model metrics cards #}
         <div class="model-metrics-grid">
@@ -95,12 +98,13 @@ Titanic Survival Prediction Model Information
             <li>The model learns at a rate of {{ learning_rate }}. A slower learning rate improves accuracy.</li>
             <li>All trees 'vote' on the final prediction, with later trees correcting earlier trees' mistakes.</li>
         </ul>
+
         <h2>Download Output Data</h2>
         <p>If you need to use the input and output data to build a dashboard using a different tool, you can download the data.</p>
         
         {# Export data button #}
         <div class="download-section">
-            <a href="/download-data" class="train-button">Export Data</a>
+            <a href="{{ url_for('download_data') }}" class="train-button">Export Data</a>
         </div>
 
         {# Technical details (collapsible) #}
