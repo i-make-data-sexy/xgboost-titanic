@@ -26,7 +26,8 @@ function renderPlot(containerId, scriptId) {
   /* ================================================
     Decode binary data
    ================================================ */
-  // This was the critical fix that got Plotly charts working in my Flask app
+
+  // This was the critical fix that got Plotly charts working in my Flask app 🥳
 
   function decodeBinaryData(obj) {
     // Base64 decode helper
@@ -74,15 +75,6 @@ function renderPlot(containerId, scriptId) {
   const decodedFig = decodeBinaryData(fig);
 
   console.groupCollapsed(`[DX] ${containerId} - Decoded Data`);
-  console.log('Decoded figure:', decodedFig);
-
-  // Show the actual values for verification
-  if (decodedFig.data && decodedFig.data[0]) {
-    console.log('X values:', decodedFig.data[0].x);
-    console.log('Y values:', decodedFig.data[0].y);
-    console.log('Text values:', decodedFig.data[0].text);
-  }
-  console.groupEnd();
 
   // NEW: Add autosize to layout
   decodedFig.layout.autosize = true;
@@ -101,8 +93,6 @@ function renderPlot(containerId, scriptId) {
       setTimeout(function () {
         // NEW: Only log once for the first chart to avoid spam
         if (containerId === 'importance-chart') {
-          console.log('[DX] === FULL WIDTH HIERARCHY ===');
-          console.log('Window width:', window.innerWidth);
           
           // Trace up from the content div
           const contentDiv = document.querySelector('.content');
@@ -112,13 +102,6 @@ function renderPlot(containerId, scriptId) {
             
             while (current && level < 5) {
               const styles = window.getComputedStyle(current);
-              console.log(`Level ${level} - ${current.tagName}.${current.className || '[no class]'}:`, {
-                width: styles.width,
-                maxWidth: styles.maxWidth,
-                padding: styles.padding,
-                margin: styles.margin,
-                boxSizing: styles.boxSizing
-              });
               current = current.parentElement;
               level++;
             }
@@ -126,11 +109,6 @@ function renderPlot(containerId, scriptId) {
           
           // Check body styles specifically
           const bodyStyles = window.getComputedStyle(document.body);
-          console.log('Body styles:', {
-            width: bodyStyles.width,
-            padding: bodyStyles.padding,
-            margin: bodyStyles.margin
-          });
         }
         
         Plotly.Plots.resize(containerId);
@@ -217,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnText.textContent = 'Training...';
       spinner.classList.remove('hidden');
       message.textContent = 'Model in training 🏋️‍♂️';
-      message.className = 'training-message training-in-progress';  // Keep both classes
+      message.className = 'training-message training-in-progress';          // Keep both classes
 
       try {
         const response = await fetch('/retrain', {
@@ -239,17 +217,17 @@ document.addEventListener('DOMContentLoaded', () => {
             Accuracy: ${result.metrics.accuracy}%<br>
             <a href="/model-performance" class="link">View Performance Metrics</a>
           `;
-          message.className = 'training-message training-success';  // Keep both classes
+          message.className = 'training-message training-success';          // Keep both classes
           btnText.textContent = 'Retrain Model';
         } else {
           // Error
           message.textContent = `Error: ${result.error}`;
-          message.className = 'training-message training-error';  // Keep both classes
+          message.className = 'training-message training-error';            // Keep both classes
           btnText.textContent = 'Try Again';
         }
       } catch (error) {
         message.textContent = `Error: ${error.message}`;
-        message.className = 'training-message training-error';  // Keep both classes
+        message.className = 'training-message training-error';              // Keep both classes
         btnText.textContent = 'Try Again';
       } finally {
         // Re-enable button and hide spinner
@@ -275,7 +253,7 @@ document.addEventListener('mouseover', function (e) {
     if (rect.left < 160) {  // Too close to left edge
       e.target.style.setProperty('--tooltip-left', '0');
       e.target.style.setProperty('--tooltip-transform', 'translateY(-10px)');
-    } else if (rect.right > window.innerWidth - 160) {  // Too close to right edge
+    } else if (rect.right > window.innerWidth - 160) {                      // Too close to right edge
       e.target.style.setProperty('--tooltip-left', 'auto');
       e.target.style.setProperty('--tooltip-right', '0');
       e.target.style.setProperty('--tooltip-transform', 'translateY(-10px)');

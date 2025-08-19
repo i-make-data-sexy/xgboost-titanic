@@ -51,10 +51,6 @@
    Annielytcs Header Styles
    ======================================================================== */
 
-/* ========================================================================
-  Header Styles
-  ======================================================================== */
-
 /* ===============================
    All Pages
   ============================== */
@@ -156,10 +152,8 @@
    font-size: 14px !important;
    font-weight: 600 !important;
    letter-spacing: 2px !important;
-
-   /* NEW - 3/22 @ 5:03PM */
    position: relative;
-   z-index: 1001; /* Higher than the menu */
+   z-index: 1001;                       /* Higher than the menu */
 }
 
 .menu-toggle::before {
@@ -206,7 +200,7 @@
 
 /* Ensure charts are responsive */
 .chart-container > div {
-    width: 100% !important;         /* Contain the Plotly chart within bounds */
+    width: 100% !important;             /* Contain the Plotly chart within bounds */
     height: 100% !important;
     max-width: 100%;
     position: relative;
@@ -257,8 +251,8 @@ h2 {
 
 /* Fix header height issue */
 .header {
-    height: auto !important;        /* Override any hardcoded height */
-    min-height: auto !important;    /* Remove any min-height constraints */
+    height: auto !important;            /* Override any hardcoded height */
+    min-height: auto !important;        /* Remove any min-height constraints */
     margin-left: 15px;
 }
 
@@ -274,8 +268,8 @@ h2 {
 }
 
 .header-nav h2 {
-    margin: 0 0 0 15px;             /* Remove default margins to line up the link on the model perf page*/
-    line-height: 1;                 /* Tighten line height for better alignment with link */
+    margin: 0 0 0 15px;                 /* Remove default margins to line up the link on the model perf page*/
+    line-height: 1;                     /* Tighten line height for better alignment with link */
 }
 
 
@@ -286,17 +280,17 @@ h2 {
 /* I need these custom styles for the MP page because I moved the link to the main dashboard to line up with the h2 */
 
 .header-nav .link {
-    line-height: 1;                 /* Match the h2 line height */
-    align-self: flex-end;           /* Ensure it aligns to bottom */
-    padding-bottom: 0;              /* Remove any bottom padding */
-    margin-bottom: 0;               /* Remove any bottom margin */
+    line-height: 1;                     /* Match the h2 line height */
+    align-self: flex-end;               /* Ensure it aligns to bottom */
+    padding-bottom: 0;                  /* Remove any bottom padding */
+    margin-bottom: 0;                   /* Remove any bottom margin */
 }
 
 /* Ensure the container properly aligns items */
 .header-nav {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;          /* Changed from flex-end to baseline */
+    align-items: baseline;              /* Changed from flex-end to baseline */
     margin-bottom: 20px;
 }
 
@@ -473,7 +467,7 @@ p a:hover {
 
 .metrics-summary {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);  /* 3 columns, 2 rows */
+    grid-template-columns: repeat(3, 1fr);  /* 3 columns */
     max-width: 1400px;
     margin: 1.5rem;
     flex-wrap: wrap;
@@ -482,7 +476,7 @@ p a:hover {
 }
 
 .metric-card {
-    width: 100%;                    /* Full width of grid cell */
+    width: 100%;                            /* Full width of grid cell */
     min-width: 180px;
     background: white;
     border-radius: 8px;
@@ -589,16 +583,16 @@ p a:hover {
 
 /* Model status styling */
 .model-status-warning {
-    color: var(--color-brand-orange);  /* Uses your brand orange #FFA500 */
+    color: var(--color-brand-orange);   /* Annielytics orange #FFA500 */
 }
 
 /* You could also add other status states */
 .model-status-success {
-    color: var(--color-brand-green);   /* Uses your brand green #8BB42D */
+    color: var(--color-brand-green);    /* Annielytics green #8BB42D */
 }
 
 .model-status-error {
-    color: var(--color-brand-fuscia);  /* Uses your brand fuchsia #E90555 */
+    color: var(--color-brand-fuscia);   /* Annielytics fuchsia #E90555 */
 }
 
 /* Training message styles - ensure it appears below button, not as tooltip */
@@ -625,7 +619,7 @@ p a:hover {
 
 /* Training message state colors */
 .training-message.training-in-progress {
-    color: #0273BE !important;  /* Add !important temporarily to test */
+    color: #0273BE !important;          /* Add !important temporarily to test */
 }
 
 .training-message.training-success {
@@ -692,12 +686,12 @@ p a:hover {
     content: attr(data-tooltip);
     white-space: pre-wrap;
     position: absolute;
-    bottom: 100%;                                   /* Position above the icon instead of to the side */
+    bottom: 100%;                           /* Position above the icon instead of to the side */
     background: rgba(255, 165, 0, 0.95);
     color: #444;
     padding: 10px 14px;
     border-radius: 10px;
-    width: 320px;                                   /* Fixed width for consistency */
+    width: 320px;                           /* Fixed width for consistency */
     font-size: 14px;
     font-weight: normal;
     opacity: 0;
@@ -815,7 +809,7 @@ p a:hover {
 
 
 /* ================================================
-   XGB: Breakpoint: 1280px - Break into 2 rows (3 columns each)
+   XGB: Breakpoint: 1280px - Break into 1 column 
    ================================================ */
 @media only screen and (max-width: 1280px) {
 
@@ -848,7 +842,7 @@ p a:hover {
 
 @media only screen and (max-width: 1000px) {
     .metrics-summary {
-        grid-template-columns: repeat(2, 1fr);      /* 2 columns, 3 rows */
+        grid-template-columns: repeat(2, 1fr);      /* 2 columns */
     }
     
     /* Ensure chart containers can scroll horizontally */
@@ -969,7 +963,7 @@ p a:hover {
 
     .footer-nav {
         display: grid;
-        grid-template-columns: 1fr 1fr;             /* Create 2 columns */
+        grid-template-columns: 1fr 1fr;             /* Create 1 column */
         gap: 15px;                                  /* Even spacing between items */
         width: 100%;
         justify-items: center;                      /* Center items horizontally */
@@ -1049,8 +1043,6 @@ p a:hover {
        width: 100%;
        box-sizing: border-box;
        letter-spacing: 0.5px;
-
-       /* NEW - 3/22 @ 5:03PM */
        z-index: 1000;
    }
 
@@ -1082,10 +1074,12 @@ p a:hover {
 
 
 /* ================================================
-   XGB: Breakpoint 600px 
+   XGB: Breakpoint 630px 
    ================================================ */
+
+/* Increased this from 600px because the CV score was breaking into 2 rows */
    
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 630px) {
      /* Adjust container padding for mobile */
     .dashboard-container {
         padding: 15px;
@@ -1095,19 +1089,16 @@ p a:hover {
 
     .metrics-summary {
         grid-template-columns: 1fr !important;                 /* Single column */
-        /* max-width: 350px; */
     }
     
     .metric-card {
         width: 100%;
-        max-width: 300px;
         margin: 0 auto;
     }
     
     /* Footer in single column */
     .footer {
         grid-template-columns: 1fr;
-        /* max-width: 160px; */
     }
 
     .footer-nav {
@@ -1116,15 +1107,5 @@ p a:hover {
 
     .footer-link {
         width: 100%;
-    }
-    
-    /* Smaller headings on mobile */
-    h1 {
-        font-size: 1.8em;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-        margin: 20px 0 0 10px;
     }
 }

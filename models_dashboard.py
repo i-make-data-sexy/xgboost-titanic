@@ -102,7 +102,7 @@ def train_basic_model(X_train, y_train, X_test=None, y_test=None, use_class_weig
         n_estimators=100,
         max_depth=4,
         learning_rate=0.1,
-        scale_pos_weight=scale_pos_weight  # Class weight parameter
+        scale_pos_weight=scale_pos_weight               # Class weight parameter
     )
     
     # Prepare evaluation set if test data provided
@@ -291,7 +291,7 @@ def plot_feature_importance(model, feature_names):
         "Importance": importance * 100  # Convert to percentage
     }).sort_values("Importance", ascending=True)
     
-    # NEW: Add interpretive hover text
+    # Add interpretive hover text
     importance_df["hover_text"] = importance_df.apply(
         lambda row: (
             f"<b>{row['Feature']}</b><br>"
@@ -322,14 +322,14 @@ def plot_feature_importance(model, feature_names):
         text="Importance",
         color_discrete_sequence=[config.BRAND_COLORS["blue"]],
         labels={"Importance": "Importance (%)"},
-        custom_data=["hover_text"]  # NEW: Pass hover text as custom data
+        custom_data=["hover_text"]  # Pass hover text as custom data
     )
     
     # Format text on bars as percentages
     fig.update_traces(
         texttemplate="%{text:.1f}%",
         textposition="outside",
-        hovertemplate="%{customdata[0]}<extra></extra>"  # NEW: Use custom hover template
+        hovertemplate="%{customdata[0]}<extra></extra>"  # Use custom hover template
     )
     
     max_x = importance_df["Importance"].max()
@@ -350,7 +350,7 @@ def plot_feature_importance(model, feature_names):
         margin_pad=5,
         plot_bgcolor="white",
         paper_bgcolor="white",
-        hoverlabel=dict(  # NEW: Style the tooltip
+        hoverlabel=dict(  # Style the tooltip
             bgcolor="rgba(255, 165, 0, 0.95)",  # Your brand orange
             font_size=14
         )
@@ -398,8 +398,8 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
     
     # Custom colorscale - only two colors needed
     colorscale = [
-        [0, "#D3D3D3"],                       # Gray for value 0 (incorrect)
-        [1, config.BRAND_COLORS["blue"]]        # Blue for value 1 (correct)
+        [0, "#D3D3D3"],                        # Gray for value 0 (incorrect)
+        [1, config.BRAND_COLORS["blue"]]         # Blue for value 1 (correct)
     ]
     
     # Create text annotations for display
@@ -614,12 +614,12 @@ def plot_roc_curve(y_true, y_scores):
             f"True Positive Rate: {optimal['tpr']:.2f}<br>"
             f"<br>" 
             f"Interpretation:<br>" 
-            f"<i>This is the best balance point where the model<br>"            # Non-technical explanation starts
+            f"<i>This is the best balance point where the model<br>"            # Non-technical interpretation starts
             f"correctly identifies the most actual survivors<br>"
             f"while minimizing false positives (i.e., those the model <br>"
             f"predicted to survive who actually died). At this threshold,<br>"
             f"the model catches {optimal['sensitivity']:.0%} of survivors with only {optimal['fpr']:.0%} <br>"
-            f"false positives.</i><br>"          # Explanation ends
+            f"false positives.</i><br>"                                         # Interpretation ends
             "<extra></extra>"
         )
     )
@@ -633,7 +633,7 @@ def plot_roc_curve(y_true, y_scores):
             "True Positive Rate: %{y:.2f}<br>"              
             "False Positive Rate: %{x:.2f}<br>"              
             "<br>"                                           
-            "<b>Interpretation:</b><br>"                                                         # Interpretation starts
+            "<b>Interpretation:</b><br>"                                          # Non-technical interpretation starts
             "<i>At this threshold setting, the model would<br>"
             "correctly identify %{y:.0%} of actual survivors<br>"
             "(True Positive Rate) but would also incorrectly<br>"
@@ -644,8 +644,8 @@ def plot_roc_curve(y_true, y_scores):
             f"means this model is {'excellent' if roc_auc > 0.9 else 'good' if roc_auc > 0.8 else 'acceptable' if roc_auc > 0.7 else 'moderate'} at distinguishing <br>"
             f"between survivors and non-survivors. <br>" 
             f"(Perfect = 1, Random = 0.5, Excellent > 0.9, <br>"
-            f"Good > 0.8, Acceptable > 0.7)</i><br>"                                                  # AUC explanation
-            "<extra></extra>"                                                                     # Interpretation ends  
+            f"Good > 0.8, Acceptable > 0.7)</i><br>"                               # AUC explanation
+            "<extra></extra>"                                                      # Interpretation ends  
         )
     )
     
