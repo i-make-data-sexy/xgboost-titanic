@@ -291,6 +291,133 @@ def retrain():
         logger.error(f"Full traceback:", exc_info=True)  # Full error details
         return jsonify({"error": str(e)}), 500
 
+@app.route("/download-data")
+def download_data():
+    """
+    Generate a ZIP file with all CSV data for dashboard prototyping.
+    """
+    from flask import Response
+    import io
+    import zipfile
+    
+    try:
+        # Load and preprocess data
+        df = load_titanic_data()
+        
+        # Create a ZIP file in memory
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            
+            # 1. ORIGINAL DATA FOR EXPLORATION DASHBOARD
+            # This is the clean data for your class, gender, age, and family charts
+            exploration_df = df.copy()
+            exploration_df['Survived_Label'] = exploration_df['Survived'].map({0: 'Did Not Survive', 1: 'Survived'})
+            exploration_df['Sex_Label'] = exploration_df['Sex']
+            exploration_df['Pclass_Label'] = exploration_df['Pclass'].map({1: 'First', 2: 'Second', 3: 'Third'})
+            
+            # Add age groups for age distribution chart
+            exploration_df['Age_Group'] = pd.cut(exploration_df['Age'], 
+                                                  bins=[0, 12, 18, 35, 50, 80], 
+                                                  labels=['Child', 'Teen', 'Young Adult', 'Middle Age', 'Senior'])
+            
+            # Add family size categories
+            exploration_df['SibSp_Parch_Total'] = exploration_df['SibSp'] + exploration_df['Parch']
+            exploration_df['Family_Size'] = exploration_df['SibSp_Parch_Total'].apply(
+                lambda x: 'Alone' if x == 0 else 'Small (1-3)' if x <= 3 else 'Large (4+)'
+            )
+            
+            csv_data = exploration_df.to_csv(index=False)
+            zip_file.writestr('01_exploration_dashboard_data.csv', csv_data)
+            
+            # 2. PREPROCESSED DATA WITH ALL FEATURES
+            df_processed, encoders = preprocessing.preprocess_data(df)
+            df_processed['Survived_Label'] = df_processed['Survived'].map({0: 'Did Not Survive', 1: 'Survived'})
+            
+            csv_data = df_processed.to_csv(index=False)
+            zip_file.writestr('02_preprocessed_features.csv', csv_data)
+            
+            # 3. COMBINED MODEL PERFORMANCE DATA (with predictions AND feature importance)
+            model_path = config.SAVED_MODELS_DIR / config.MODEL_FILENAME
+            encoder_path = config.SAVED_MODELS_DIR / "encoders.pkl"
+            
+            if model_path.exists():
+                model = joblib.load(model_path)
+                encoders = joblib.load(encoder_path)
+                
+                # Get preprocessed data and predictions
+                df_processed, _ = preprocessing.preprocess_data(df, fit_encoders=False, encoders=encoders)
+                X = preprocessing.get_feature_matrix(df_processed)
+                y = df_processed[config.TARGET_COLUMN]
+                
+                # Split data
+                X_train, X_test, y_train, y_test = models_dashboard.split_data(X, y)
+                
+                # Get predictions
+                y_pred = model.predict(X_test)
+                y_pred_proba = model.predict_proba(X_test)[:, 1]
+                
+                # FIX: Reset index to avoid mismatch
+                X_test_reset = X_test.reset_index(drop=True)
+                y_test_reset = y_test.reset_index(drop=True)
+                
+                # Create model performance dataframe with proper indexing
+                model_perf_df = pd.DataFrame({
+                    'Actual_Survived': y_test_reset.values,
+                    'Predicted_Survived': y_pred,
+                    'Survival_Probability': y_pred_proba,
+                    'Actual_Label': y_test_reset.map({0: 'Did Not Survive', 1: 'Survived'}),
+                    'Predicted_Label': pd.Series(y_pred).map({0: 'Did Not Survive', 1: 'Survived'}),
+                    'Correct_Prediction': (y_test_reset.values == y_pred).astype(int)
+                })
+                
+                # Add all features to the performance data
+                for col in X_test_reset.columns:
+                    model_perf_df[col] = X_test_reset[col].values
+                
+                csv_data = model_perf_df.to_csv(index=False)
+                zip_file.writestr('03_model_predictions.csv', csv_data)
+                
+                # Create feature importance dataframe
+                importance_df = pd.DataFrame({
+                    'Feature': model.feature_names_in_,
+                    'Importance_Score': model.feature_importances_,
+                    'Importance_Percentage': model.feature_importances_ * 100
+                }).sort_values('Importance_Score', ascending=False)
+                
+                csv_data = importance_df.to_csv(index=False)
+                zip_file.writestr('04_feature_importance.csv', csv_data)
+                
+                # 4. CONFUSION MATRIX DATA
+                from sklearn.metrics import confusion_matrix
+                cm = confusion_matrix(y_test, y_pred)
+                
+                cm_df = pd.DataFrame({
+                    'Actual': ['Did Not Survive', 'Did Not Survive', 'Survived', 'Survived'],
+                    'Predicted': ['Did Not Survive', 'Survived', 'Did Not Survive', 'Survived'],
+                    'Count': [cm[0,0], cm[0,1], cm[1,0], cm[1,1]],
+                    'Category': ['True Negative', 'False Positive', 'False Negative', 'True Positive']
+                })
+                
+                csv_data = cm_df.to_csv(index=False)
+                zip_file.writestr('05_confusion_matrix.csv', csv_data)
+            
+            # 5. RAW ORIGINAL DATA
+            csv_data = df.to_csv(index=False)
+            zip_file.writestr('06_titanic_raw.csv', csv_data)
+        
+        # Prepare the ZIP file for download
+        zip_buffer.seek(0)
+        
+        return Response(
+            zip_buffer.getvalue(),
+            mimetype="application/zip",
+            headers={"Content-Disposition": "attachment; filename=titanic_dashboard_data.zip"}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error generating ZIP file: {str(e)}")
+        return f"Error: {str(e)}", 500
 
 # ========================================================================
 #   Error Handlers

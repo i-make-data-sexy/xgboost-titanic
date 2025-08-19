@@ -526,6 +526,18 @@ p a:hover {
     justify-content: center;
 }
 
+/* ======================================================================
+    Export 
+   ======================================================================= */
+
+.download-section {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
 
 
 /* ======================================================================
@@ -567,6 +579,7 @@ p a:hover {
     font-weight: 600;
     letter-spacing: 1.5px;
     text-transform: uppercase;
+    text-decoration: none;
     transition: background-color 0.3s ease !important;
     box-shadow: 2px 2px 2px rgb(0, 0, 0, 0.3) !important;
 }
@@ -574,6 +587,7 @@ p a:hover {
 .train-button:hover {
     background-color: var(--color-brand-blue) !important;
     border: none;
+    text-decoration: underline;
 }
 
 .train-button:focus {
