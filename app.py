@@ -8,6 +8,7 @@ Simplified to focus on routing and coordination.
 # ========================================================================
 
 from flask import Flask, render_template, request, jsonify
+import os
 import pandas as pd
 import logging
 import config
@@ -15,6 +16,7 @@ import index_dashboard
 import models_dashboard
 import preprocessing
 import joblib
+import json
 from pathlib import Path
 
 # ========================================================================
@@ -209,38 +211,42 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/model-info")
+@app.route('/model-info')
 def model_info():
-    """
-    Displays information about the trained model.
-    """
+    # Load model
+    model_path = config.SAVED_MODELS_DIR / config.MODEL_FILENAME
     
-    try:
-        # Check if model exists
-        model_path = config.SAVED_MODELS_DIR / config.MODEL_FILENAME
-        
-        if not model_path.exists():
-            return jsonify({"status": "No model trained yet"}), 404
-        
-        # Load model
-        model = joblib.load(model_path)
-        
-        # Get model parameters
-        model_info = {
-            "model_type": "XGBoost Classifier",
-            "version": config.MODEL_VERSION,
-            "parameters": model.get_params(),
-            "n_features": model.n_features_in_ if hasattr(model, "n_features_in_") else "Unknown",
-            "feature_names": config.FEATURE_COLUMNS
-        }
-        
-        return jsonify(model_info)
-        
-    except Exception as e:
-        logger.error(f"Error getting model info: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-
+    # Get the actual model information
+    if not os.path.exists(model_path):
+        return "No model found", 404
+    
+    model = joblib.load(model_path)
+    
+    # Prepare the data
+    feature_names = model.feature_names_in_.tolist() if hasattr(model, 'feature_names_in_') else []
+    parameters = model.get_params()
+    
+    # Convert to formatted JSON strings
+    feature_names_json = json.dumps(feature_names, indent=2)
+    parameters_json = json.dumps(parameters, indent=2)
+    
+    # NEW: Extract the actual values for the metric cards
+    n_estimators = parameters.get('n_estimators', 100)
+    max_depth = parameters.get('max_depth', 3)
+    learning_rate = parameters.get('learning_rate', 0.1)
+    
+    # Render the template with the data
+    return render_template('model-info.html',
+        model_type="XGBoost",
+        n_features=model.n_features_in_,
+        version="v1.0",
+        n_estimators=n_estimators,  # NEW: Added this
+        max_depth=max_depth,  # NEW: Added this
+        learning_rate=learning_rate,  # NEW: Added this
+        feature_names_json=feature_names_json,
+        parameters_json=parameters_json
+    )
+    
 @app.route("/retrain", methods=["POST"])
 def retrain():
     """

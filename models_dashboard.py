@@ -350,6 +350,7 @@ def plot_feature_importance(model, feature_names):
         margin_pad=5,
         plot_bgcolor="white",
         paper_bgcolor="white",
+        dragmode=False,
         hoverlabel=dict(  # Style the tooltip
             bgcolor="rgba(255, 165, 0, 0.95)",  # Your brand orange
             font_size=14
@@ -449,6 +450,7 @@ def plot_confusion_matrix(cm, labels=["Did Not Survive", "Survived"]):
         height=600,
         plot_bgcolor="white",
         paper_bgcolor="white",
+        dragmode=False,
         margin=dict(l=60, r=40, t=60, b=150)        # Allow more space for annotation
     )
     
@@ -677,7 +679,8 @@ def plot_roc_curve(y_true, y_scores):
         paper_bgcolor="white",
         legend=dict(x=0.6, y=0.1),
         xaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
-        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1])
+        yaxis=dict(gridcolor="rgba(200,200,200,0.3)", range=[0, 1]),
+        dragmode=False
     )
     
     # Log before returning

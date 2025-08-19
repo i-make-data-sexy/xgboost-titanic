@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{# Set the page title #}
+{% block title %}Titanic Survival Prediction Model Information{% endblock %}
+
+{# Main heading for the page #}
+{% block page_title %}
+Titanic Survival Prediction Model Information
+{% endblock %}
+
+{# Set the header text #}
+{% block header %}
+    <div class="header-nav">
+        <h1>XGBoost Classifier Model Info</h1>
+    </div>
+{% endblock %}
+
+{# Main content section #}
+{% block content %}
+    <div class="entry-content">
+        <p>Want to peek under the hood? This page provides a detailed overview of the XGBoost model 
+            powering the Titanic survival predictions. Below you'll find the model's configuration, 
+            the features it considers, and how it makes its predictions.</p>
+        
+        {# Model metrics cards #}
+        <div class="model-metrics-grid">
+            <div class="model-metric-card">
+                <h5>Model</h5>
+                <span class="metric-value">{{ model_type }}</span>
+            </div>
+            <div class="model-metric-card">
+                <h5>Features</h5>
+                <span class="metric-value">{{ n_features }}</span>
+            </div>
+            <div class="model-metric-card">
+                <h5>Version</h5>
+                <span class="metric-value">{{ version }}</span>
+            </div>
+            <div class="model-metric-card">
+                <h5>Trees Built</h5>
+                <span class="metric-value">{{ n_estimators }}</span>
+            </div>
+            <div class="model-metric-card">
+                <h5>Tree Depth</h5>
+                <span class="metric-value">{{ max_depth }}</span>
+            </div>
+            <div class="model-metric-card">
+                <h5>Learning Rate</h5>
+                <span class="metric-value">{{ learning_rate }}</span>
+            </div>
+        </div>
+
+        <h2>What This Model Does</h2>
+        <p>This machine learning model predicts whether a passenger on the Titanic survived based on their personal characteristics and travel details. It's a binary classifier, meaning it makes yes/no predictions. In the case of the Titanic dataset, it predicted if passengers survived.</p>
+
+        <h2>Features the Model Considers</h2>
+        <p>The model analyzes {{ n_features }} different passenger characteristics to make predictions:</p>
+        
+        <div class="feature-categories">
+            <div class="feature-card">
+                <h4>Personal Information</h4>
+                <ul>
+                    <li><strong>Age</strong>: Passenger's age and age group</li>
+                    <li><strong>Sex</strong>: Gender of the passenger</li>
+                    <li><strong>Title</strong>: Social title (Mr., Mrs., Dr, etc.)</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h4>Ticket Details</h4>
+                <ul>
+                    <li><strong>Passenger Class</strong>: 1st, 2nd, or 3rd class</li>
+                    <li><strong>Fare</strong>: Ticket price and price category</li>
+                    <li><strong>Cabin</strong>: Whether passenger had a cabin</li>
+                    <li><strong>Embarked</strong>: Port embarked from</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h4>Family Information</h4>
+                <ul>
+                    <li><strong>Family Size</strong>: Total family members aboard</li>
+                    <li><strong>Siblings/Spouse</strong>: Number aboard</li>
+                    <li><strong>Parents/Children</strong>: Number aboard</li>
+                    <li><strong>Is Alone</strong>: Traveling solo or not</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>How the Model Works</h2>
+        <p>The Extreme Gradient Boosting (XGBoost) model works like a committee of decision-makers to return optimal predictions, following a set of prescribed steps:</p>
+        <ul>
+            <li>It creates {{ n_estimators }} decision trees to tackle the prediction task.</li>
+            <li>Each tree can ask up to {{ max_depth }} questions about a passenger.</li>
+            <li>The model learns at a rate of {{ learning_rate }}. A slower learning rate improves accuracy.</li>
+            <li>All trees 'vote' on the final prediction, with later trees correcting earlier trees' mistakes.</li>
+        </ul>
+
+        {# Technical details (collapsible) #}
+        <details class="technical-section">
+            <summary>Super nerdy details 🤓</summary>
+            
+            <div class="technical-content">
+                <h4>Feature Names</h4>
+                <pre class="json-display">{{ feature_names_json | safe }}</pre>
+                
+                <h4>Model Parameters</h4>
+                <pre class="json-display">{{ parameters_json | safe }}</pre>
+            </div>
+        </details>
+    </div>
+{% endblock %}
