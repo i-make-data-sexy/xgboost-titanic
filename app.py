@@ -8,15 +8,15 @@ Simplified to focus on routing and coordination.
 # ========================================================================
 
 from flask import Flask, render_template, request, jsonify
-import os
 import pandas as pd
+import os
+import json
 import logging
 import config
 import index_dashboard
 import models_dashboard
 import preprocessing
 import joblib
-import json
 from pathlib import Path
 
 # ========================================================================
@@ -58,6 +58,7 @@ def load_titanic_data():
 # ========================================================================
 
 @app.route("/")
+@app.route('/portfolio/apps/xgboost-demo/')
 def index():
     """
     Main dashboard route - displays visualizations.
@@ -93,6 +94,7 @@ def index():
 # Add this route to your app.py file
 
 @app.route("/model-performance")
+@app.route('/portfolio/apps/xgboost-demo/model-performance')
 def model_performance():
     """
     Display model performance metrics and evaluation charts.
@@ -177,6 +179,7 @@ def model_performance():
 
 
 @app.route("/predict", methods=["GET", "POST"])
+@app.route('/portfolio/apps/xgboost-demo/predict')
 def predict():
     """
     Prediction endpoint - can display form or process predictions.
@@ -211,7 +214,8 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/model-info')
+@app.route("/model-info")
+@app.route('/portfolio/apps/xgboost-demo/model-info')
 def model_info():
     # Load model
     model_path = config.SAVED_MODELS_DIR / config.MODEL_FILENAME
@@ -246,8 +250,9 @@ def model_info():
         feature_names_json=feature_names_json,
         parameters_json=parameters_json
     )
-    
+
 @app.route("/retrain", methods=["POST"])
+@app.route('/portfolio/apps/xgboost-demo/retrain')
 def retrain():
     """
     Endpoint to trigger model retraining.
@@ -291,7 +296,9 @@ def retrain():
         logger.error(f"Full traceback:", exc_info=True)  # Full error details
         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/download-data")
+@app.route('/portfolio/apps/xgboost-demo/download-data')
 def download_data():
     """
     Generate a ZIP file with all CSV data for dashboard prototyping.
@@ -418,6 +425,7 @@ def download_data():
     except Exception as e:
         logger.error(f"Error generating ZIP file: {str(e)}")
         return f"Error: {str(e)}", 500
+
 
 # ========================================================================
 #   Error Handlers

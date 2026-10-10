@@ -106,7 +106,7 @@ def create_class_survival_chart(df):
         plot_bgcolor="white",
         margin=dict(t=60, b=40, l=80, r=40),
         height=350,
-        dragmode=False
+        dragmode=False,
     )
     
     return fig
@@ -158,7 +158,7 @@ def create_gender_survival_donut(df):
         margin=dict(t=60, b=40, l=40, r=40),
         height=350,
         showlegend=False,
-        dragmode=False
+        dragmode=False,
     )
     
     return fig
@@ -217,7 +217,7 @@ def create_family_survival_line(df):
         plot_bgcolor="white",
         margin=dict(t=60, b=40, l=60, r=40),
         height=350,
-        dragmode=False
+        dragmode=False,
     )
     
     return fig

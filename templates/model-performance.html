@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {# Set the page title - suggestion: "Model Performance Metrics" #}
-{% block title %}Titanic Model Performance Dashboard{% endblock %}
+{% block title %}Titanic Model Performance - XGBoost Demo{% endblock %}
 
 {# Set the header text #}
 {% block header %}
@@ -15,7 +15,7 @@
 {% block content %}
     <div class=header-nav>
         <h2>Executive Summary</h2>
-        <p><a href="/">View the Data Exploration dashboard</a></p>
+        <p><a href="/portfolio/apps/xgboost-demo/" class="model-performance-no-margin">View the Data Exploration dashboard</a></p>
     </div>
     
     {# Executive Summary at the top #}
@@ -31,14 +31,14 @@
             <div class="metric-card">
                 <span class="metric-label">
                     ROC AUC
-                    <span class="info-icon" data-tooltip="Area Under the ROC Curve (pictured in the line chart below) measures how well the model distinguishes between survivors and non-survivors. Higher is better. Values range from 0.5 (random guessing) to 1.0 (perfect). Above 0.7 is acceptable, above 0.8 is good, above 0.9 is excellent.">ⓘ</span>
+                    <span class="info-icon" data-tooltip="The Area Under the ROC Curve (pictured in the line chart below) measures how well the model distinguishes between survivors and non-survivors. Higher is better. Values range from 0.5 (random guessing) to 1.0 (perfect). Above 0.7 is acceptable, above 0.8 is good, above 0.9 is excellent.">ⓘ</span>
                 </span>
                 <span class="metric-value">{{ roc_auc }}</span>
             </div>
             <div class="metric-card">
                 <span class="metric-label">
                     CV Score
-                    <span class="info-icon" data-tooltip="The Cross-Validation Score assesses how consistently the model performs across different data splits. The ± value shows the variation. Higher scores are better, while lower variation is better (i.e., more consistent). Scores above 0.8 with variation below ±0.05 indicate stable, reliable performance.">ⓘ</span>
+                    <span class="info-icon" data-tooltip="The Cross-Validation (CV) Score assesses how consistently the model performs across different data splits. The ± value shows the variation. Higher scores are better, while lower variation is better (i.e., more consistent). Scores above 0.8 with variation below ±0.05 indicate stable, reliable performance.">ⓘ</span>
                 </span>
                 <span class="metric-value">{{ cv_score }}</span>
             </div>
@@ -52,7 +52,7 @@
             <div class="metric-card">
                 <span class="metric-label">
                     Recall
-                    <span class="info-icon" data-tooltip="Of all passengers who actually survived, what percentage did the model correctly identify? Higher is better. Above 60% is acceptable, above 70% is good, above 80% is excellent. Lower recall means more missed survivors. There's often a trade-off between precision and recall.">ⓘ</span>
+                    <span class="info-icon" data-tooltip="Of all passengers who actually survived, what percentage did the model correctly identify? Higher is better. Above 60% is acceptable, above 70% is good, above 80% is excellent. Lower recall means more missed survivors. There's often a trade-off between precision and recall. XGBoost identifies the best balance in its Optimal Threshold data point (identified in the line chart below with a star).">ⓘ</span>
                 </span>
                 <span class="metric-value">{{ recall }}%</span>
             </div>

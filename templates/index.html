@@ -2,13 +2,13 @@
 {% extends "base.html" %}
 
 {# Set the page title #}
-{% block title %}Titanic Survival Analysis Dashboard{% endblock %}
+{% block title %}Titanic Survival Analysis Dashboard - XGBoost Demo{% endblock %}
 
 {# Set the header text #}
 {% block header %}
     <div class="header-nav">
-        <h1>Data Exploration Dashboard</h1>
-        <p><a href="/model-performance">View the Model Performance dashboard</a></p>
+        <h1 class="title-no-margin">Data Exploration Dashboard</h1>
+        <p><a href="/portfolio/apps/xgboost-demo/model-performance">View the Model Performance dashboard</a></p>
     </div>
 {% endblock %}s
 
@@ -22,7 +22,7 @@
         <div class="chart-container" id="age-chart"></div>
     </div>
 
-    {# Model training section #}
+    {# Model training section - not necessary on the website
     <div class="model-training-section">
         <button id="train-model-btn" class="train-button">
             <span id="btn-text">Train New Model</span>
@@ -30,6 +30,7 @@
         </button>
         <p id="training-message" class="training-message"></p>
     </div>
+     #}
 
     {# Hidden JSON data for JavaScript to consume #}
     <script id="class-chart-data" type="application/json">{{ class_chart | safe }}</script>

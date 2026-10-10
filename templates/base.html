@@ -37,6 +37,9 @@
                 </a>
             </div>
 
+            {# This doesn't work in just this app; I don't know why #}
+            {# <button class="menu-toggle" aria-expanded="false">MENU</button> #}
+
             {# Alternative solution suggested by Claude (pers acct: https://bit.ly/4kHRzHf) #}
             <input type="checkbox" id="menu-toggle-checkbox" class="hidden">
             {# Replace the button with a label that has the same styling #}
@@ -46,13 +49,13 @@
             <nav class="nav-primary">
                 <ul class="menu">
                     <li><a href="https://www.annielytics.com/about/">About</a></li>
-                    <li><a href="https://www.annielytics.com/services/">Services</a></li>
                     <li><a href="https://www.annielytics.com/tools/">Tools</a></li>
                     <li><a href="https://www.annielytics.com/blog/">Blog</a></li>
                     <li><a href="https://www.annielytics.com/tips/">Tips</a></li>
                     <li><a href="https://www.annielytics.com/portfolio/">Portfolio</a></li>
                     <li><a href="https://www.annielytics.com/contact/">Contact</a></li>
                     <li><a href="https://www.annielytics.com/login/">Log In</a></li>
+                    <!-- <li><a href="https://www.annielytics.com/services/">Services</a></li> -->
                 </ul>
             </nav>
         </div>
@@ -60,7 +63,7 @@
     <div class="dashboard-container">
         {# Header with dynamic title #}
         <div class="header">
-            {% block header %}{% endblock %}
+            <h1>{% block header %}Titanic ML Dashboard{% endblock %}</h1>
         </div>
         
         {# Main content area - child templates fill this #}
@@ -71,10 +74,10 @@
         {# Footer - consistent across all pages #}
         <div class="footer">
             {% block footer %}
-            <div class="footer-nav">
-                <a href="{{ url_for('index') }}" class="footer-link">Data Exploration</a>  
-                <a href="{{ url_for('model_performance') }}" class="footer-link">Model Performance</a>   
-                <a href="{{ url_for('model_info') }}" class="footer-link">Model Info</a>  
+             <div class="footer-nav">
+                <a href="/portfolio/apps/xgboost-demo/" class="footer-link">Data Exploration</a>  
+                <a href="/portfolio/apps/xgboost-demo/model-performance" class="footer-link">Model Performance</a>  
+                <a href="/portfolio/apps/xgboost-demo/model-info" class="footer-link">Model Info</a> 
                 <a href="https://github.com/i-make-data-sexy/xgboost-titanic/" target="_blank" class="footer-link">GitHub Repo</a>
             </div>
             {% endblock %}
@@ -84,13 +87,14 @@
     {# Block for page-specific scripts at bottom #}
     {% block scripts %}{% endblock %}
 
-    {# NEW: Add hamburger menu functionality #}
+    {# Add hamburger menu functionality #}
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const menuToggle = document.getElementById('menu-toggle-checkbox');
         const menu = document.querySelector('.nav-primary .menu');
         
-        if (menuToggle && menu) {  /* NEW: Add safety check */
+        /* Add safety check */
+        if (menuToggle && menu) {  
             menuToggle.addEventListener('change', function() {
                 if (this.checked) {
                     menu.classList.add('visible');
